@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Shadowgfx | Roblox GFX Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070c18;--bg2:#0b1120;--bg3:#0f1729;
+  --cyan:#2dd4e8;--yellow:#f5c518;
+  --white:#ffffff;--muted:#8899bb;
+  --border:rgba(45,212,232,0.15);
+}
+*{margin:0;padding:0;box-sizing:border-box;cursor:none!important}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--white);font-family:'Figtree',sans-serif;overflow-x:hidden;}
+
+/* ── CURSOR ── */
+#cur{position:fixed;width:14px;height:14px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);box-shadow:0 0 12px var(--cyan);}
+#cur2{position:fixed;width:36px;height:36px;border:2px solid rgba(45,212,232,.45);border-radius:50%;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:left .09s ease,top .09s ease;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:64px;background:rgba(7,12,24,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-brand{display:flex;align-items:center;gap:10px;font-size:1.25rem;font-weight:900;letter-spacing:-.5px;}
+.logo-box{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--cyan),#0a7a8a);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:900;color:#000;border:2px solid rgba(45,212,232,.4);}
+.chk{width:18px;height:18px;border-radius:50%;background:var(--cyan);display:inline-flex;align-items:center;justify-content:center;margin-left:2px;}
+.chk svg{width:10px;height:10px;}
+.nav-links{display:flex;gap:28px;list-style:none;}
+.nav-links a{text-decoration:none;color:var(--muted);font-size:.82rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;transition:color .2s;}
+.nav-links a:hover{color:var(--white);}
+.nav-order{background:var(--cyan);color:#000;font-weight:800;font-size:.82rem;padding:8px 20px;border-radius:8px;text-decoration:none;transition:all .2s;}
+.nav-order:hover{background:#fff;}
+
+/* ── SECTIONS ── */
+section{position:relative;z-index:1;padding:100px 64px;}
+.pill{display:inline-block;background:rgba(45,212,232,.1);border:1.5px solid rgba(45,212,232,.3);color:var(--white);font-size:.72rem;font-weight:700;padding:5px 14px;border-radius:100px;letter-spacing:.3px;margin-bottom:18px;}
+.sec-title{font-size:clamp(2rem,3.5vw,3rem);font-weight:900;line-height:1.1;letter-spacing:-1px;margin-bottom:18px;}
+.sec-title .hl{color:var(--cyan);}
+.sec-title .hl-y{color:var(--yellow);}
+.sec-body{color:var(--muted);font-size:.95rem;line-height:1.75;font-weight:500;margin-bottom:16px;max-width:480px;}
+
+/* ── HERO ── */
+#hero{min-height:100vh;display:flex;align-items:center;justify-content:space-between;padding-top:120px;gap:40px;overflow:hidden;}
+.hero-left{flex:1;min-width:280px;}
+.hero-tag{display:inline-block;background:rgba(45,212,232,.1);border:1.5px solid rgba(45,212,232,.35);color:var(--white);font-size:.8rem;font-weight:700;padding:6px 16px;border-radius:100px;letter-spacing:.3px;margin-bottom:22px;}
+.hero-title{font-size:clamp(2.8rem,5.5vw,4.8rem);font-weight:900;line-height:1.05;letter-spacing:-1.5px;margin-bottom:18px;}
+.hero-title .hl{color:var(--cyan);}
+.hero-sub{color:var(--muted);font-size:1rem;line-height:1.7;max-width:460px;font-weight:500;margin-bottom:32px;}
+.hero-btns{display:flex;gap:12px;}
+.btn-fill{display:inline-flex;align-items:center;gap:7px;padding:12px 24px;background:var(--cyan);color:#000;font-weight:800;font-size:.9rem;border-radius:10px;text-decoration:none;transition:all .2s;border:none;}
+.btn-fill:hover{background:#fff;transform:translateY(-2px);}
+.btn-ghost{display:inline-flex;align-items:center;gap:7px;padding:12px 24px;background:rgba(255,255,255,.05);color:var(--white);font-weight:800;font-size:.9rem;border-radius:10px;text-decoration:none;border:1.5px solid rgba(255,255,255,.12);transition:all .2s;}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan);}
+.hero-right{flex:0 0 auto;width:460px;position:relative;}
+.hero-img-wrap{width:100%;border-radius:20px;overflow:hidden;border:3px solid rgba(45,212,232,.2);box-shadow:0 0 60px rgba(45,212,232,.1);}
+.hero-img-wrap img{width:100%;display:block;}
+.hero-badge{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);background:var(--bg3);border:1.5px solid var(--border);border-radius:12px;padding:10px 20px;display:flex;gap:24px;white-space:nowrap;}
+.hb-item{text-align:center;}
+.hb-num{font-size:1.2rem;font-weight:900;color:var(--cyan);}
+.hb-lbl{font-size:.65rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+
+/* ── ABOUT ── */
+#about{display:flex;align-items:center;justify-content:space-between;gap:80px;min-height:100vh;}
+.about-left{flex:1;}
+.about-right{flex:0 0 auto;width:340px;background:var(--bg3);border:1.5px solid var(--border);border-radius:20px;padding:32px;}
+.clock-box{background:rgba(0,0,0,.3);border:1.5px solid var(--border);border-radius:14px;padding:18px 24px;display:inline-block;margin-top:8px;}
+.clock-lbl{font-size:.65rem;font-weight:700;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+#clock{font-size:1.6rem;font-weight:900;letter-spacing:1px;color:var(--white);font-variant-numeric:tabular-nums;}
+.sk-row{margin-bottom:16px;}
+.sk-row:last-child{margin-bottom:0;}
+.sk-head{display:flex;justify-content:space-between;font-size:.8rem;font-weight:700;margin-bottom:6px;}
+.sk-head span:last-child{color:var(--cyan);}
+.sk-track{height:6px;background:rgba(255,255,255,.07);border-radius:100px;overflow:hidden;}
+.sk-fill{height:100%;background:linear-gradient(90deg,#0a6a78,var(--cyan));border-radius:100px;animation:grow 1.4s ease forwards;}
+@keyframes grow{from{width:0!important}}
+
+/* ── PROJECTS ── */
+#projects{min-height:80vh;}
+.tab-switch{display:inline-flex;background:rgba(255,255,255,.05);border:1.5px solid var(--border);border-radius:100px;padding:4px;gap:4px;margin-top:24px;margin-bottom:10px;}
+.tab-btn{padding:8px 22px;border-radius:100px;font-size:.82rem;font-weight:700;border:none;background:transparent;color:var(--muted);letter-spacing:.3px;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.tab-btn.active{background:var(--cyan);color:#000;}
+.tab-label{font-size:.85rem;color:var(--muted);font-weight:600;margin-bottom:28px;}
+.tab-label span{color:var(--cyan);font-weight:800;}
+
+/* Carousel */
+.car-outer{width:100%;overflow:hidden;position:relative;height:340px;display:flex;align-items:center;justify-content:center;}
+.car-track{display:flex;align-items:center;justify-content:center;position:relative;height:300px;width:100%;}
+.c-card{
+  position:absolute;
+  width:460px;height:270px;
+  border-radius:14px;overflow:hidden;
+  border:2px solid rgba(45,212,232,.2);
+  transition:transform .5s cubic-bezier(.25,.8,.25,1), opacity .5s ease, z-index 0s;
+  flex-shrink:0;
+}
+.c-card img{width:100%;height:100%;object-fit:cover;display:block;}
+.c-overlay{position:absolute;bottom:0;left:0;right:0;padding:12px 14px;background:linear-gradient(transparent,rgba(0,0,0,.82));display:flex;align-items:center;gap:8px;}
+.c-type{background:rgba(45,212,232,.9);color:#000;font-size:.62rem;font-weight:800;padding:3px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:.5px;}
+.c-name{font-size:.82rem;font-weight:700;color:#fff;}
+.car-nav{display:flex;justify-content:center;gap:12px;margin-top:14px;}
+.car-btn{padding:8px 22px;background:rgba(255,255,255,.07);border:1.5px solid var(--border);color:var(--white);font-weight:700;font-size:.82rem;border-radius:8px;transition:all .2s;}
+.car-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.car-hint{text-align:center;font-size:.73rem;color:var(--muted);margin-bottom:6px;}
+
+/* ── PRICING ── */
+#pricing{background:rgba(255,255,255,.015);}
+.price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:36px;}
+.p-card{background:rgba(255,255,255,.04);border:1.5px solid var(--border);border-radius:18px;padding:26px;position:relative;overflow:hidden;transition:all .25s;}
+.p-card:hover{border-color:var(--cyan);transform:translateY(-5px);box-shadow:0 16px 48px rgba(45,212,232,.1);}
+.p-card.gold{border-color:var(--yellow);}
+.p-card.gold::before{content:'TOP TIER';position:absolute;top:14px;right:-30px;background:var(--yellow);color:#000;font-size:.6rem;font-weight:900;padding:4px 48px;transform:rotate(45deg);letter-spacing:1px;}
+.p-icon{width:46px;height:46px;border-radius:12px;background:rgba(45,212,232,.1);border:1.5px solid rgba(45,212,232,.2);display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
+.p-icon svg{width:22px;height:22px;}
+.p-tier{font-size:.65rem;text-transform:uppercase;letter-spacing:2px;font-weight:800;margin-bottom:5px;}
+.p-name{font-size:1.15rem;font-weight:900;margin-bottom:4px;}
+.p-tagline{color:var(--muted);font-size:.78rem;font-weight:500;line-height:1.5;margin-bottom:14px;}
+.p-desc{color:var(--muted);font-size:.82rem;line-height:1.6;font-weight:500;margin-bottom:18px;}
+.p-price{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px 14px;}
+.p-r{font-size:.95rem;font-weight:800;color:var(--cyan);}
+.p-u{font-size:.73rem;color:var(--muted);margin-top:2px;}
+.p-revisions{font-size:.7rem;color:rgba(45,212,232,.7);margin-top:5px;font-weight:700;}
+
+/* ── REVIEWS ── */
+.rev-grid{display:grid;gap:14px;margin-top:36px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));}
+.rev-card{background:rgba(255,255,255,.04);border:1.5px solid var(--border);border-radius:14px;padding:22px;transition:border-color .2s;}
+.rev-card:hover{border-color:rgba(45,212,232,.35);}
+.rev-name{font-size:.9rem;font-weight:800;margin-bottom:8px;color:var(--white);}
+.rev-text{color:var(--muted);font-size:.83rem;line-height:1.65;font-weight:500;}
+
+/* ── CONTACT ── */
+#contact{display:flex;align-items:center;justify-content:space-between;gap:80px;}
+.contact-left{flex:0 0 auto;width:280px;}
+.contact-left img{width:100%;border-radius:16px;opacity:.9;}
+.contact-right{flex:1;}
+.contact-title{font-size:clamp(2rem,4vw,3.2rem);font-weight:900;letter-spacing:-1px;margin-bottom:8px;}
+.contact-sub{color:var(--muted);font-size:.95rem;line-height:1.7;margin-bottom:28px;font-weight:500;}
+.c-links{display:flex;flex-direction:column;gap:12px;max-width:500px;}
+.c-row{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.04);border:1.5px solid var(--border);border-radius:14px;padding:14px 18px;text-decoration:none;color:var(--white);transition:all .2s;}
+.c-row:hover{border-color:var(--cyan);background:rgba(45,212,232,.05);transform:translateX(6px);}
+.c-ico{width:40px;height:40px;border-radius:10px;background:rgba(45,212,232,.1);border:1px solid rgba(45,212,232,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.c-ico svg{width:19px;height:19px;}
+.c-txt{flex:1;}
+.c-plat{font-size:.63rem;text-transform:uppercase;letter-spacing:2px;color:var(--cyan);font-weight:800;}
+.c-hand{font-size:.9rem;font-weight:800;}
+.c-act{background:var(--white);color:#000;font-weight:800;font-size:.76rem;padding:7px 14px;border-radius:7px;text-decoration:none;flex-shrink:0;transition:background .2s;}
+.c-act:hover{background:var(--cyan);}
+
+/* FOOTER */
+footer{text-align:center;padding:26px;background:var(--cyan);color:#000;font-weight:800;font-size:.85rem;letter-spacing:.3px;}
+
+/* REVEAL */
+.rv{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease;}
+.rv.on{opacity:1;transform:translateY(0);}
+.rv.d1{transition-delay:.1s}.rv.d2{transition-delay:.2s}.rv.d3{transition-delay:.3s}
+
+@media(max-width:900px){
+  nav{padding:0 18px;}.nav-links{display:none;}
+  section{padding:80px 20px;}
+  #hero,#about,#contact{flex-direction:column;}
+  .hero-right,.about-right,.contact-left{width:100%;}
+  .c-card{width:90vw;height:auto;aspect-ratio:16/9;}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur2"></div>
+
+<!-- ══ NAV ══ -->
+<nav>
+  <div class="nav-brand">
+    <div class="logo-box">S</div>
+    SHADOWGFX
+    <span class="chk"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#hero">HOME</a></li>
+    <li><a href="#about">ABOUT</a></li>
+    <li><a href="#projects">PROJECTS</a></li>
+    <li><a href="#pricing">PRICING</a></li>
+    <li><a href="#reviews">REVIEWS</a></li>
+    <li><a href="#contact">CONTACT</a></li>
+  </ul>
+  <a href="#contact" class="nav-order">Order Now</a>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section id="hero">
+  <div class="hero-left">
+    <div class="hero-tag rv">High CTR. Real Results.</div>
+    <h1 class="hero-title rv d1">GFX so clean,<br>it's <span class="hl">Shadow.</span></h1>
+    <p class="hero-sub rv d2">Ready to level up your game's appearance?<br>Let's bring your ideas into reality and make something awesome!</p>
+    <div class="hero-btns rv d3">
+      <a href="#about" class="btn-fill">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        Who's Shadow?
+      </a>
+      <a href="#contact" class="btn-ghost">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Order Now
+      </a>
+    </div>
+  </div>
+  <div class="hero-right rv d2">
+    <div class="hero-img-wrap">
+      <img src="image_20.png" alt="Shadow GFX Work"/>
+    </div>
+    <div class="hero-badge">
+      <div class="hb-item"><div class="hb-num">3mo</div><div class="hb-lbl">Experience</div></div>
+      <div class="hb-item"><div class="hb-num">50+</div><div class="hb-lbl">Commissions</div></div>
+      <div class="hb-item"><div class="hb-num">100%</div><div class="hb-lbl">Dedication</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ABOUT ══ -->
+<section id="about">
+  <div class="about-left">
+    <span class="pill rv">Professional. High Quality.</span>
+    <h2 class="sec-title rv d1">Who's <span class="hl">Shadow</span> ?</h2>
+    <p class="sec-body rv d1">From thumbnails to icons, I do it all! I'm a solo Roblox GFX designer passionate about making visuals that perform. Need someone to make a thumbnail to represent your game? Have no fear — Shadow is here!</p>
+    <p class="sec-body rv d2">With a focus on high click-through rates and clean composition, every piece I create is built to get your game noticed on the front page.</p>
+    <div class="rv d2">
+      <div class="clock-box">
+        <div class="clock-lbl">Current UK Time (GMT)</div>
+        <div id="clock">--:--:-- --</div>
+      </div>
+    </div>
+  </div>
+  <div class="about-right rv d2">
+    <p style="font-size:.78rem;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;">Skill Breakdown</p>
+    <div class="sk-row">
+      <div class="sk-head"><span>Thumbnail Design</span><span>95%</span></div>
+      <div class="sk-track"><div class="sk-fill" style="width:95%"></div></div>
+    </div>
+    <div class="sk-row">
+      <div class="sk-head"><span>Icon Design</span><span>92%</span></div>
+      <div class="sk-track"><div class="sk-fill" style="width:92%"></div></div>
+    </div>
+    <div class="sk-row">
+      <div class="sk-head"><span>CTR Optimization</span><span>90%</span></div>
+      <div class="sk-track"><div class="sk-fill" style="width:90%"></div></div>
+    </div>
+    <div class="sk-row">
+      <div class="sk-head"><span>Visual Composition</span><span>93%</span></div>
+      <div class="sk-track"><div class="sk-fill" style="width:93%"></div></div>
+    </div>
+    <div class="sk-row">
+      <div class="sk-head"><span>Roblox Branding</span><span>88%</span></div>
+      <div class="sk-track"><div class="sk-fill" style="width:88%"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PROJECTS ══ -->
+<section id="projects">
+  <span class="pill rv">Detail-Driven Designs.</span>
+  <h2 class="sec-title rv d1">Shadow's <span class="hl">Featured</span> Work</h2>
+
+  <div class="tab-switch rv d2" id="proj-tabs">
+    <button class="tab-btn active" data-tab="thumb">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Thumbnails
+    </button>
+    <button class="tab-btn" data-tab="icon">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9 12l2 2 4-4"/></svg>
+      Icons
+    </button>
+  </div>
+  <p class="tab-label rv d2">Now viewing: <span id="proj-current">Thumbnails</span></p>
+
+  <div class="car-outer">
+    <div class="car-track" id="car-track">
+      <!-- THUMBNAIL cards -->
+      <div class="c-card" data-tab="thumb">
+        <img src="orangeman_3.png" alt="Thumbnail 1"/>
+        <div class="c-overlay"><span class="c-type">Thumbnail</span><span class="c-name">Orange Man GFX</span></div>
+      </div>
+      <div class="c-card" data-tab="thumb">
+        <img src="orang435.png" alt="Thumbnail 2"/>
+        <div class="c-overlay"><span class="c-type">Thumbnail</span><span class="c-name">Orange Chase</span></div>
+      </div>
+      <div class="c-card" data-tab="thumb">
+        <img src="lucykblockbasesammy_5.png" alt="Thumbnail 3"/>
+        <div class="c-overlay"><span class="c-type">Thumbnail</span><span class="c-name">Block Base Battle</span></div>
+      </div>
+      <div class="c-card" data-tab="thumb">
+        <img src="New_Project_29.png" alt="Thumbnail 4"/>
+        <div class="c-overlay"><span class="c-type">Thumbnail</span><span class="c-name">Roblox Escape</span></div>
+      </div>
+      <!-- ICON cards -->
+      <div class="c-card" data-tab="icon">
+        <img src="image_20.png" alt="Icon 1"/>
+        <div class="c-overlay"><span class="c-type" style="background:rgba(245,197,24,.9);color:#000;">Icon</span><span class="c-name">Red Fighter</span></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="car-hint rv">Drag to spin &bull; Hover to pause</p>
+  <div class="car-nav rv d1">
+    <button class="car-btn" id="prevBtn">&#8249; Prev</button>
+    <button class="car-btn" id="nextBtn">Next &#8250;</button>
+  </div>
+</section>
+
+<!-- ══ PRICING ══ -->
+<section id="pricing">
+  <span class="pill rv">Straightforward. No Surprises.</span>
+  <h2 class="sec-title rv d1">Shadow's <span class="hl-y">Pricing</span> Breakdown</h2>
+
+  <!-- Pricing tabs -->
+  <div class="tab-switch rv d2" id="price-tabs">
+    <button class="tab-btn active" data-pt="thumb">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Thumbnails
+    </button>
+    <button class="tab-btn" data-pt="icon">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9 12l2 2 4-4"/></svg>
+      Icons
+    </button>
+  </div>
+  <p class="tab-label rv d2">Now viewing: <span id="price-current">Thumbnails</span></p>
+
+  <!-- THUMBNAIL PRICES -->
+  <div class="price-grid" id="thumb-prices">
+    <div class="p-card rv">
+      <div class="p-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+      <div class="p-tier" style="color:var(--muted);">Standard</div>
+      <div class="p-name">Standard Thumbnail</div>
+      <p class="p-desc">High-CTR Roblox thumbnail designed to boost your game's click-through rate and drive real visits.</p>
+      <div class="p-price">
+        <div class="p-r">5,000 Robux (w/ tax)</div>
+        <div class="p-u">or $20 USD via PayPal</div>
+      </div>
+    </div>
+    <div class="p-card gold rv d2">
+      <div class="p-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+      <div class="p-tier" style="color:var(--yellow);">1st Class</div>
+      <div class="p-name">1st Class Thumbnail</div>
+      <p class="p-tagline" style="color:rgba(245,197,24,.7);">Highest level quality, crafted detail for every pixel.</p>
+      <p class="p-desc">The ultimate thumbnail — premium composition, maximum detail, and optimised for the highest possible CTR. Up to 4 revisions included.</p>
+      <div class="p-price" style="border-color:rgba(245,197,24,.15);">
+        <div class="p-r" style="color:var(--yellow);">10,000 Robux (w/ tax)</div>
+        <div class="p-u">or $50 USD via PayPal</div>
+        <div class="p-revisions">✦ Up to 4 revisions included</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ICON PRICES (hidden by default) -->
+  <div class="price-grid" id="icon-prices" style="display:none;">
+    <div class="p-card rv">
+      <div class="p-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <div class="p-tier" style="color:var(--muted);">Standard</div>
+      <div class="p-name">Standard Icon</div>
+      <p class="p-desc">Clean, professional Roblox game icon. The first thing players see — make it count.</p>
+      <div class="p-price">
+        <div class="p-r">4,500 Robux (w/ tax)</div>
+        <div class="p-u">or $15 USD via PayPal</div>
+      </div>
+    </div>
+    <div class="p-card rv d1">
+      <div class="p-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+      <div class="p-tier" style="color:var(--cyan);">Premium</div>
+      <div class="p-name">Premium Icon</div>
+      <p class="p-desc">Elevated icon with extra detail, refined composition and stronger visual presence for your game page.</p>
+      <div class="p-price">
+        <div class="p-r">7,000 Robux (w/ tax)</div>
+        <div class="p-u">or $30 USD via PayPal</div>
+      </div>
+    </div>
+    <div class="p-card gold rv d2">
+      <div class="p-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+      <div class="p-tier" style="color:var(--yellow);">1st Class</div>
+      <div class="p-name">1st Class Icon</div>
+      <p class="p-tagline" style="color:rgba(245,197,24,.7);">Highest level quality, crafted detail for every pixel.</p>
+      <p class="p-desc">Maximum detail, premium quality icon built to make your game shine above the competition.</p>
+      <div class="p-price" style="border-color:rgba(245,197,24,.15);">
+        <div class="p-r" style="color:var(--yellow);">8,000 Robux (w/ tax)</div>
+        <div class="p-u">or $40 USD via PayPal</div>
+        <div class="p-revisions">✦ Up to 4 revisions included</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order criteria -->
+  <div style="margin-top:40px;text-align:center;border-top:1px solid var(--border);padding-top:28px;" class="rv">
+    <p style="font-size:.8rem;color:var(--muted);margin-bottom:16px;">
+      Prefer custom? <a href="https://discord.com/users/gfxshadow" style="color:var(--cyan);font-weight:700;text-decoration:none;">Message on Discord</a> or
+      <a href="mailto:shadowzxxyt@gmail.com" style="color:var(--cyan);font-weight:700;text-decoration:none;">email shadowzxxyt@gmail.com</a> for a free quote.
+    </p>
+    <h3 style="font-size:1rem;font-weight:800;margin-bottom:14px;">Before ordering, please have the following ready:</h3>
+    <div style="display:flex;flex-direction:column;gap:8px;max-width:500px;margin:0 auto;text-align:left;">
+      <div style="display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.86rem;font-weight:500;">
+        <span style="width:7px;height:7px;border-radius:50%;background:var(--cyan);flex-shrink:0;box-shadow:0 0 6px var(--cyan);"></span>
+        <span><strong style="color:var(--white);">Basic Idea of Artwork</strong> (description of what you'd like)</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.86rem;font-weight:500;">
+        <span style="width:7px;height:7px;border-radius:50%;background:var(--yellow);flex-shrink:0;box-shadow:0 0 6px var(--yellow);"></span>
+        <span><strong style="color:var(--white);">Roblox character</strong> details / poses you want</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.86rem;font-weight:500;">
+        <span style="width:7px;height:7px;border-radius:50%;background:var(--cyan);flex-shrink:0;opacity:.5;"></span>
+        <span><strong style="color:var(--white);">References</strong> (the more images, the better)</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ REVIEWS ══ -->
+<section id="reviews">
+  <span class="pill rv">Trusted by Creators.</span>
+  <h2 class="sec-title rv d1">What People <span class="hl">Say</span></h2>
+  <div class="rev-grid">
+    <div class="rev-card rv"><div class="rev-name">★★★★★ — Flame</div><p class="rev-text">Shadow always puts his best effort forward. Delivers on time, quality work at fair prices. Worth every Robux!</p></div>
+    <div class="rev-card rv d1"><div class="rev-name">★★★★★ — Jovve</div><p class="rev-text">Reliable, consistent, and makes very high quality art that makes your game pop. Understands clients and always delivers.</p></div>
+    <div class="rev-card rv d2"><div class="rev-name">★★★★★ — felixderboss</div><p class="rev-text">We've never been disappointed. He always takes his time and delivers top quality work!</p></div>
+    <div class="rev-card rv"><div class="rev-name">★★★★★ — 2664k</div><p class="rev-text">Excellent, fast, professional GFX icon that exceeded expectations. Very friendly and smart. Will hire again!</p></div>
+    <div class="rev-card rv d1"><div class="rev-name">★★★★★ — Blibstar</div><p class="rev-text">Design looks clean and fits the game's theme really well. 10/10 overall.</p></div>
+    <div class="rev-card rv d2"><div class="rev-name">★★★★★ — Armo</div><p class="rev-text">Took the time to understand my idea and bring it to life. Didn't rush anything — the final result was 🔥</p></div>
+  </div>
+</section>
+
+<!-- ══ CONTACT ══ -->
+<section id="contact">
+  <div class="contact-left rv">
+    <img src="orangeman_3.png" alt="Shadow GFX"/>
+  </div>
+  <div class="contact-right">
+    <h2 class="contact-title rv">Let's <span style="color:var(--cyan);">Connect</span></h2>
+    <p class="contact-sub rv d1">Ready to elevate your project? Let's talk and keep things simple.</p>
+    <div class="c-links">
+      <a href="https://discord.com/users/gfxshadow" target="_blank" class="c-row rv d1">
+        <div class="c-ico">
+          <svg viewBox="0 0 24 24" fill="var(--cyan)"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.03.054a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.1.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+        </div>
+        <div class="c-txt"><div class="c-plat">Discord</div><div class="c-hand">gfxshadow</div></div>
+        <span class="c-act">Message</span>
+      </a>
+      <a href="https://twitter.com/Shdwgfx" target="_blank" class="c-row rv d2">
+        <div class="c-ico">
+          <svg viewBox="0 0 24 24" fill="var(--cyan)"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </div>
+        <div class="c-txt"><div class="c-plat">Twitter / X</div><div class="c-hand">@Shdwgfx</div></div>
+        <span class="c-act">Follow</span>
+      </a>
+      <a href="mailto:shadowzxxyt@gmail.com" class="c-row rv d3">
+        <div class="c-ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+        <div class="c-txt"><div class="c-plat">Email</div><div class="c-hand">shadowzxxyt@gmail.com</div></div>
+        <span class="c-act">Send Email</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>Thank you for checking out my portfolio! ✦ Shadowgfx</footer>
+
+<script>
+// ── CURSOR ──
+const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+document.addEventListener('mousemove',e=>{
+  cur.style.left=e.clientX+'px'; cur.style.top=e.clientY+'px';
+  setTimeout(()=>{cur2.style.left=e.clientX+'px';cur2.style.top=e.clientY+'px';},90);
+});
+
+// ── CLOCK (GMT/UK) ──
+function updateClock(){
+  const now=new Date();
+  // Convert to UK time using Intl
+  const ukStr=now.toLocaleTimeString('en-GB',{timeZone:'Europe/London',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
+  document.getElementById('clock').textContent=ukStr.toUpperCase();
+}
+updateClock();setInterval(updateClock,1000);
+
+// ── REVEAL ──
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on');});
+},{threshold:0.07});
+document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
+document.querySelectorAll('#hero .rv').forEach(el=>el.classList.add('on'));
+
+// ── CAROUSEL ──
+const allCards=[...document.querySelectorAll('.c-card')];
+let activeTab='thumb',curIdx=0,paused=false;
+
+function getCards(){return allCards.filter(c=>c.dataset.tab===activeTab);}
+
+function renderCarousel(){
+  const vis=getCards();
+  const total=vis.length;
+  // Hide all first
+  allCards.forEach(c=>{c.style.opacity='0';c.style.pointerEvents='none';c.style.zIndex='0';});
+  vis.forEach((card,i)=>{
+    const offset=((i-curIdx)+total)%total;
+    const half=Math.floor(total/2);
+    // Map offset to range [-half, half]
+    const rel=offset>half?offset-total:offset;
+    const absRel=Math.abs(rel);
+    const maxShow=2; // show 2 cards either side of center
+    if(absRel>maxShow){card.style.opacity='0';card.style.pointerEvents='none';return;}
+    const x=rel*280;
+    const scale=1-absRel*0.15;
+    const z=1-absRel*0.12;
+    const op=1-absRel*0.35;
+    card.style.transform=`translateX(${x}px) scaleX(${scale}) scaleY(${scale})`;
+    card.style.opacity=String(Math.max(op,0));
+    card.style.zIndex=String(10-absRel);
+    card.style.pointerEvents=absRel===0?'auto':'none';
+  });
+}
+
+// Project tab switching
+document.querySelectorAll('#proj-tabs .tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#proj-tabs .tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    activeTab=btn.dataset.tab;
+    curIdx=0;
+    document.getElementById('proj-current').textContent=activeTab==='thumb'?'Thumbnails':'Icons';
+    renderCarousel();
+  });
+});
+
+document.getElementById('nextBtn').addEventListener('click',()=>{
+  const v=getCards();curIdx=(curIdx+1)%v.length;renderCarousel();
+});
+document.getElementById('prevBtn').addEventListener('click',()=>{
+  const v=getCards();curIdx=(curIdx-1+v.length)%v.length;renderCarousel();
+});
+
+// Drag
+let drag=false,dragStartX=0,dragStartIdx=0;
+const track=document.getElementById('car-track');
+track.addEventListener('mousedown',e=>{drag=true;dragStartX=e.clientX;dragStartIdx=curIdx;});
+document.addEventListener('mousemove',e=>{
+  if(!drag)return;
+  const dx=e.clientX-dragStartX;
+  const v=getCards();
+  const newIdx=dragStartIdx-Math.round(dx/120);
+  curIdx=((newIdx%v.length)+v.length)%v.length;
+  renderCarousel();
+});
+document.addEventListener('mouseup',()=>drag=false);
+track.addEventListener('mouseenter',()=>paused=true);
+track.addEventListener('mouseleave',()=>paused=false);
+
+renderCarousel();
+
+// ── PRICING TABS ──
+document.querySelectorAll('#price-tabs .tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#price-tabs .tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const pt=btn.dataset.pt;
+    document.getElementById('price-current').textContent=pt==='thumb'?'Thumbnails':'Icons';
+    document.getElementById('thumb-prices').style.display=pt==='thumb'?'grid':'none';
+    document.getElementById('icon-prices').style.display=pt==='icon'?'grid':'none';
+  });
+});
+</script>
+</body>
+</html>
