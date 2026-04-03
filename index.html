@@ -1,230 +1,292 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HoppiGFX – High Quality Thumbnails</title>
-<meta name="description" content="HoppiGFX – Professional Roblox thumbnail designer.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HoppiGFX — High Quality Thumbnails</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set, push, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+const cfg = {
+  apiKey:"AIzaSyB0cVfpaQyLYQBcC0oTUFHFCX-Rm2x-HME",
+  authDomain:"hoppigfx.firebaseapp.com",
+  projectId:"hoppigfx",
+  storageBucket:"hoppigfx.appspot.com",
+  messagingSenderId:"613154173085",
+  appId:"1:613154173085:web:ec298bfc65689295dce474",
+  measurementId:"G-R4PXYS2WVL",
+  databaseURL:"https://hoppigfx-default-rtdb.firebaseio.com"
+};
+const app = initializeApp(cfg);
+const db  = getDatabase(app);
+const storage = getStorage(app);
+window._fb = { db, ref, onValue, set, push, remove, storage, sRef, uploadBytes, getDownloadURL };
+
+onValue(ref(db,'siteLinks'), snap => {
+  const d = snap.val() || {};
+  window._links = d;
+  if(d.twitter)  document.querySelectorAll('[data-link="twitter"]').forEach(e=>{ e.href=d.twitter; });
+  if(d.discord){ document.querySelectorAll('[data-link="discord"]').forEach(e=>{ e.href=d.discord; e.style.pointerEvents='auto'; e.querySelector('.contact-handle').textContent=d.discord.replace(/https?:\/\//,''); }); }
+  else { document.querySelectorAll('[data-link="discord"]').forEach(e=>{ e.querySelector('.contact-handle').textContent='Coming Soon'; }); }
+  if(d.email){ document.querySelectorAll('[data-link="email"]').forEach(e=>{ e.href='mailto:'+d.email; e.querySelector('.contact-handle').textContent=d.email; }); }
+});
+onValue(ref(db,'projects'), snap => { window._projects=snap.val()||{}; renderProjects(window._projects); if(window._refreshAdmin) window._refreshAdmin(); });
+onValue(ref(db,'reviews'),  snap => { window._reviews=snap.val()||{};  renderReviews(window._reviews);  if(window._refreshAdmin) window._refreshAdmin(); });
+onValue(ref(db,'showcase'), snap => { window._showcase=snap.val()||{}; renderShowcase(window._showcase); if(window._refreshAdmin) window._refreshAdmin(); });
+</script>
+
 <style>
-:root{--bg:#08192b;--bg2:#0c1e33;--card:#0f2540;--card2:#112848;--border:rgba(180,207,237,0.10);--border-h:rgba(180,207,237,0.26);--glow:#b4cfed;--glow2:#5b9bd5;--white:#f0f6ff;--muted:#6a8aaa;--gold:#f0c040;--green:#3ecf7a;--red:#f87171}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;line-height:1.6}
+:root{
+  --bg:#05101d;--s1:#091726;--s2:#0d1e30;
+  --ac:#7eb8f7;--ac2:#3a8ef0;
+  --white:#eef4ff;--muted:rgba(160,195,235,0.48);
+  --border:rgba(126,184,247,0.1);--bh:rgba(126,184,247,0.3);
+  --r:18px;--rsm:12px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-serif;font-size:16px;line-height:1.65;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
 img{max-width:100%;display:block}
-a{color:inherit;text-decoration:none}
-button{font-family:'DM Sans',sans-serif}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 80% -10%,rgba(91,155,213,.12) 0%,transparent 60%),radial-gradient(ellipse 55% 40% at -5% 65%,rgba(180,207,237,.06) 0%,transparent 55%),radial-gradient(ellipse 45% 30% at 50% 105%,rgba(91,155,213,.07) 0%,transparent 60%);pointer-events:none;z-index:0}
-nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;background:rgba(8,25,43,.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
-.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;letter-spacing:-.5px}
-.nav-logo span{color:var(--glow2)}
-.nav-links{display:flex;gap:28px;list-style:none}
-.nav-links a{color:var(--muted);font-size:.88rem;font-weight:500;transition:color .2s}
-.nav-links a:hover{color:var(--white)}
-.btn-order-nav{background:var(--white);color:var(--bg);border:none;padding:8px 20px;border-radius:20px;font-weight:700;font-size:.85rem;cursor:pointer;transition:all .2s;white-space:nowrap}
-.btn-order-nav:hover{background:var(--glow)}
-.hamburger{display:none;background:none;border:1px solid var(--border);color:var(--muted);width:36px;height:36px;border-radius:8px;cursor:pointer;align-items:center;justify-content:center;font-size:1.2rem}
-.mobile-drawer{display:none;position:fixed;top:64px;left:0;right:0;background:rgba(8,25,43,.98);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);z-index:999;flex-direction:column;padding:16px 24px 24px;gap:4px}
-.mobile-drawer.open{display:flex}
-.mobile-drawer a{color:var(--muted);font-size:1rem;padding:13px 0;border-bottom:1px solid var(--border);transition:color .2s;display:block}
-.mobile-drawer a:last-child{border-bottom:none}
-.mobile-drawer a:hover{color:var(--white)}
-.section{padding:100px 60px 80px;position:relative;z-index:1}
-.section-sm{padding:90px 60px 80px;position:relative;z-index:1}
-.section-sep{height:1px;background:linear-gradient(90deg,transparent,rgba(180,207,237,.12) 30%,rgba(180,207,237,.12) 70%,transparent);position:relative;z-index:1}
-.about-section{background:linear-gradient(180deg,transparent,rgba(13,33,55,.4) 40%,rgba(13,33,55,.4) 60%,transparent)}
-.pricing-section{background:linear-gradient(180deg,transparent,rgba(13,33,55,.35) 40%,rgba(13,33,55,.35) 60%,transparent)}
-.eyebrow{font-size:.72rem;font-weight:700;letter-spacing:3px;color:var(--glow2);text-transform:uppercase;margin-bottom:14px}
-.section-title{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:800;line-height:1.1;margin-bottom:20px}
-.hl{color:var(--glow2)}
-.header-center{text-align:center;margin-bottom:52px}
-.section-desc{color:var(--muted);font-size:.9rem;margin-top:10px}
-#hero{min-height:100vh;display:flex;align-items:center;gap:60px;padding-top:64px}
-.hero-left{flex:1;min-width:0}
-.hero-right{flex:0 0 auto;display:flex;justify-content:center}
-.hero-title{font-family:'Syne',sans-serif;font-size:clamp(2.4rem,5vw,3.8rem);font-weight:800;line-height:1.05;margin-bottom:16px}
-.hero-sub{color:var(--muted);font-size:1rem;margin-bottom:36px;line-height:1.7}
-.hero-btns{display:flex;gap:14px;flex-wrap:wrap}
-.btn-outline{background:transparent;border:1px solid rgba(180,207,237,.3);color:var(--white);padding:12px 24px;border-radius:30px;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
-.btn-outline:hover{border-color:var(--glow);background:rgba(180,207,237,.05)}
-.btn-solid{background:var(--white);color:var(--bg);border:none;padding:12px 24px;border-radius:30px;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}
-.btn-solid:hover{background:var(--glow);transform:translateY(-2px);box-shadow:0 8px 30px rgba(180,207,237,.2)}
-.avatar-wrap{position:relative;display:inline-block}
-.avatar-img{width:280px;height:280px;object-fit:cover;border-radius:24px;border:2px solid var(--border);display:block}
-.avatar-placeholder{width:280px;height:280px;border-radius:24px;border:2px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.9rem}
-.hero-stats{position:absolute;bottom:-20px;right:-20px;background:rgba(13,33,55,.96);border:1px solid var(--border);border-radius:16px;padding:14px 22px;display:flex;gap:22px;backdrop-filter:blur(12px)}
-.stat-val{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem}
-.stat-lbl{font-size:.63rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-top:2px}
-.about-layout{display:flex;align-items:center;gap:80px}
-.about-img{width:280px;height:330px;object-fit:cover;border-radius:22px;border:2px solid var(--border);flex-shrink:0;display:block}
-.about-body{color:var(--muted);line-height:1.8;font-size:.95rem;margin-bottom:14px}
-.clock-wrap{display:inline-flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 18px;margin-top:10px}
-.clock-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);flex-shrink:0;animation:pulse 2s ease-in-out infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 6px var(--green)}50%{box-shadow:0 0 14px var(--green),0 0 28px rgba(62,207,122,.3)}}
-.clock-time{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:1px}
-.clock-tz{color:var(--muted);font-size:.78rem}
-.featured-thumb{border-radius:20px;overflow:hidden;border:2px solid rgba(180,207,237,.15);margin-bottom:24px;cursor:pointer;position:relative;box-shadow:0 24px 64px rgba(0,0,0,.3)}
-.featured-thumb img{width:100%;max-height:440px;object-fit:cover;display:block;transition:transform .5s}
-.featured-thumb:hover img{transform:scale(1.02)}
-.thumb-overlay{position:absolute;inset:0;background:rgba(0,0,0,.22);opacity:0;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
-.featured-thumb:hover .thumb-overlay,.thumb-card:hover .thumb-overlay{opacity:1}
-.zoom-icon{font-size:2.5rem;color:white;text-shadow:0 2px 12px rgba(0,0,0,.5)}
-.badge-wrap{position:absolute;bottom:14px;left:14px;display:flex;gap:6px}
-.badge{background:rgba(8,25,43,.85);border:1px solid var(--border);border-radius:20px;padding:3px 12px;font-size:.7rem;font-weight:600;color:var(--glow);backdrop-filter:blur(6px)}
-.badge-featured{background:rgba(91,155,213,.18);border-color:var(--glow2);color:var(--white)}
-.thumbs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
-.thumb-card{border-radius:16px;overflow:hidden;border:1px solid var(--border);cursor:pointer;background:var(--card);position:relative;transition:border-color .3s,box-shadow .3s}
-.thumb-card:hover{border-color:var(--border-h);box-shadow:0 12px 40px rgba(0,0,0,.25)}
-.thumb-card img{width:100%;height:210px;object-fit:cover;display:block;transition:transform .4s}
-.thumb-card:hover img{transform:scale(1.06)}
-.empty-state{text-align:center;color:var(--muted);padding:60px 20px;border:1px dashed var(--border);border-radius:16px}
-.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;max-width:1020px;margin:0 auto}
-.price-card{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:34px 28px;position:relative;transition:transform .3s,border-color .3s,box-shadow .3s;cursor:pointer}
-.price-card:hover{transform:translateY(-8px);border-color:var(--border-h);box-shadow:0 20px 60px rgba(0,0,0,.25)}
-.price-card.popular{border-color:rgba(91,155,213,.45);background:var(--card2);box-shadow:0 0 40px rgba(91,155,213,.08)}
-.popular-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--glow2);color:var(--bg);font-size:.68rem;font-weight:700;padding:4px 16px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
-.price-tier{display:flex;align-items:center;gap:10px;margin-bottom:16px;font-family:'Syne',sans-serif;font-weight:700;font-size:1rem}
-.price-icon{width:28px;height:28px;border-radius:8px;background:rgba(91,155,213,.12);display:flex;align-items:center;justify-content:center;font-size:.9rem}
-.price-amount{font-family:'Syne',sans-serif;font-size:2.1rem;font-weight:800;margin-bottom:4px}
-.price-robux{font-size:.78rem;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:5px}
-.robux-badge{background:rgba(255,255,255,.1);border-radius:4px;padding:1px 5px;font-size:.7rem;font-weight:600;color:var(--glow)}
-.price-delivery{background:rgba(180,207,237,.06);border:1px solid var(--border);border-radius:8px;padding:8px 13px;font-size:.78rem;color:var(--muted);margin-bottom:20px}
-.price-features{list-style:none;margin-bottom:28px;display:flex;flex-direction:column;gap:9px}
-.price-features li{font-size:.85rem;color:rgba(240,246,255,.78);display:flex;align-items:flex-start;gap:8px}
-.price-features li::before{content:'•';color:var(--glow2);font-size:1.1rem;line-height:1.2;flex-shrink:0}
-.btn-price{width:100%;padding:13px;border-radius:12px;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;transition:all .2s}
-.price-card:not(.popular) .btn-price{background:transparent;border:1px solid rgba(180,207,237,.25);color:var(--white)}
-.price-card:not(.popular) .btn-price:hover{background:rgba(180,207,237,.07);border-color:var(--glow)}
-.price-card.popular .btn-price{background:var(--white);color:var(--bg);border:none}
-.price-card.popular .btn-price:hover{background:var(--glow)}
-.reviews-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-bottom:50px}
-.review-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:26px 22px;transition:border-color .3s,transform .3s}
-.review-card:hover{border-color:var(--border-h);transform:translateY(-3px)}
-.stars{display:flex;gap:4px;margin-bottom:14px}
-.star{font-size:1rem;color:var(--muted)}
-.star.filled{color:var(--gold)}
-.review-text{color:rgba(240,246,255,.82);font-size:.9rem;line-height:1.7;margin-bottom:20px;font-style:italic}
-.reviewer{display:flex;align-items:center;gap:10px}
-.reviewer-avatar{width:38px;height:38px;border-radius:50%;border:2px solid var(--border);background:var(--card2);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1rem}
-.reviewer-avatar img{width:100%;height:100%;object-fit:cover}
-.reviewer-name{font-weight:600;font-size:.87rem}
-.section-divider{border:none;border-top:1px solid var(--border);margin:52px 0 36px}
-.showcase-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1.4rem;text-align:center;margin-bottom:24px}
-.showcase-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
-.showcase-item{border-radius:12px;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:border-color .3s}
-.showcase-item:hover{border-color:var(--border-h)}
-.showcase-item img{width:100%;height:130px;object-fit:cover;display:block;transition:transform .3s}
-.showcase-item:hover img{transform:scale(1.06)}
-.contact-cards{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
-.contact-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 26px;text-align:center;width:200px;transition:all .3s;display:block;color:var(--white)}
-.contact-card:hover{border-color:var(--border-h);transform:translateY(-5px);background:var(--card2);box-shadow:0 12px 40px rgba(0,0,0,.2)}
-.contact-icon{font-size:1.8rem;margin-bottom:12px}
-.contact-name{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:6px}
-.contact-detail{font-size:.78rem;color:var(--muted)}
-.contact-arrow{font-size:.78rem;color:var(--glow2);margin-top:12px}
-footer{border-top:1px solid var(--border);padding:24px 60px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;position:relative;z-index:1}
-.footer-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem}
-.footer-logo span{color:var(--glow2)}
-.footer-admin-btn{background:transparent;border:1px solid var(--border);color:var(--muted);width:34px;height:34px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;font-size:.85rem}
-.footer-admin-btn:hover{border-color:var(--glow);color:var(--glow)}
-.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:9999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(6px)}
-.lightbox.active{opacity:1;pointer-events:all}
-.lightbox img{max-width:92vw;max-height:88vh;border-radius:14px;object-fit:contain}
-.lb-close{position:absolute;top:18px;right:22px;background:rgba(255,255,255,.1);border:none;color:var(--white);width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:1.3rem;transition:background .2s}
-.lb-close:hover{background:rgba(255,255,255,.2)}
-.admin-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:8000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:16px;opacity:0;pointer-events:none;transition:opacity .3s}
-.admin-overlay.active{opacity:1;pointer-events:all}
-.admin-panel{background:var(--bg2);border:1px solid var(--border);border-radius:20px;width:100%;max-width:800px;max-height:90vh;overflow-y:auto;padding:28px}
-.admin-panel::-webkit-scrollbar{width:4px}
-.admin-panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
-.admin-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;gap:12px;flex-wrap:wrap}
-.admin-title-row{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;display:flex;align-items:center;gap:8px}
-.admin-top-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.admin-tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
-.admin-tab{background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:20px;cursor:pointer;font-size:.78rem;transition:all .2s}
-.admin-tab.active{background:var(--glow2);border-color:var(--glow2);color:var(--bg);font-weight:700}
-.form-group{margin-bottom:16px}
-.form-label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:5px;font-weight:600}
-.form-input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:9px 13px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:.87rem;outline:none;transition:border-color .2s}
-.form-input:focus{border-color:var(--glow2)}
-textarea.form-input{min-height:85px;resize:vertical}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
-.upload-btn{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px dashed rgba(180,207,237,.3);border-radius:10px;padding:9px 16px;font-size:.8rem;color:var(--muted);cursor:pointer;transition:all .2s}
-.upload-btn:hover{border-color:var(--glow2);color:var(--white)}
-.img-preview{width:90px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--border);margin-top:8px;display:block}
-.admin-btn{background:var(--glow2);border:none;color:var(--bg);padding:10px 20px;border-radius:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:.84rem;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:7px}
-.admin-btn:hover{background:var(--glow);transform:translateY(-1px)}
-.admin-btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
-.btn-danger{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:var(--red);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:.78rem;display:inline-flex;align-items:center;gap:4px;transition:all .2s}
-.btn-danger:hover{background:rgba(239,68,68,.22)}
-.btn-ghost-sm{background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:.78rem;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
-.btn-ghost-sm:hover{border-color:var(--glow);color:var(--glow)}
-.btn-red-sm{background:transparent;border:1px solid rgba(248,113,113,.3);color:var(--red);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:.78rem;display:inline-flex;align-items:center;gap:5px;transition:all .2s}
-.btn-red-sm:hover{background:rgba(248,113,113,.08)}
-.admin-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
-.admin-items{margin-top:12px}
-.section-divider-sm{border:none;border-top:1px solid var(--border);margin:22px 0}
-.success-bar{background:rgba(62,207,122,.1);border:1px solid rgba(62,207,122,.3);border-radius:8px;padding:10px 14px;font-size:.82rem;color:var(--green);margin-bottom:18px;display:flex;align-items:center;gap:8px}
-.login-box{display:flex;flex-direction:column;align-items:center;gap:14px;padding:24px 0;text-align:center}
-.login-box p{color:var(--muted);font-size:.84rem;max-width:280px}
-.login-err{color:var(--red);font-size:.8rem}
-.stars-picker{display:flex;gap:6px}
-.stars-picker button{background:none;border:none;cursor:pointer;padding:0;font-size:1.5rem;transition:transform .15s}
-.stars-picker button:hover{transform:scale(1.2)}
-.contact-card-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px}
-.contact-card-block-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.contact-card-block-label{font-size:.8rem;font-weight:600;color:var(--glow2)}
-.showcase-admin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-top:10px}
-.showcase-admin-item{position:relative;border-radius:8px;overflow:hidden}
-.showcase-admin-item img{width:100%;height:60px;object-fit:cover;display:block}
-.showcase-admin-del{position:absolute;top:3px;right:3px;background:rgba(239,68,68,.85);border:none;border-radius:4px;color:white;cursor:pointer;padding:2px 5px;font-size:.7rem}
-.empty-muted{color:var(--muted);font-size:.84rem}
-.checkbox-row{display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:.83rem;color:var(--muted);cursor:pointer}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:rgba(126,184,247,.2);border-radius:9px}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.4}
+.container{max-width:1160px;margin:0 auto;padding:0 28px}
+.glass{background:rgba(9,23,38,.72);backdrop-filter:blur(22px);border:1px solid var(--border)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;padding:13px 0;background:rgba(5,16,29,.9);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);transition:padding .3s}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1160px;margin:0 auto;padding:0 28px}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:.06em;line-height:1}
+.logo span{color:var(--ac);font-style:italic}
+.nav-links{display:flex;gap:26px;list-style:none}
+.nav-links a{color:var(--muted);font-size:.84rem;font-weight:500;transition:color .25s}
+.nav-links a:hover{color:var(--ac)}
+.nav-right{display:flex;align-items:center;gap:12px}
+.order-btn{padding:9px 22px;border-radius:99px;background:var(--ac2);color:#fff;font-size:.85rem;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:.07em;font-style:italic;transition:transform .2s,box-shadow .2s;box-shadow:0 0 20px rgba(58,142,240,.35)}
+.order-btn:hover{transform:translateY(-1px);box-shadow:0 4px 24px rgba(58,142,240,.5)}
+.hamburger{display:none;background:none;border:1px solid var(--border);border-radius:8px;padding:7px 10px;cursor:pointer;color:var(--white)}
+.mob-menu{display:none;position:fixed;top:56px;left:0;right:0;background:rgba(5,16,29,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:18px 28px 26px;flex-direction:column;gap:2px;z-index:499}
+.mob-menu a{display:block;padding:11px 0;color:var(--muted);font-size:1rem;font-weight:500;border-bottom:1px solid var(--border)}
+.mob-menu a:last-child{border:none}
+.mob-menu.open{display:flex}
+@media(max-width:820px){.nav-links{display:none}.hamburger{display:flex;align-items:center}}
+
+/* HERO */
+#hero{min-height:100vh;display:flex;align-items:center;padding:120px 0 80px;background:radial-gradient(ellipse 70% 60% at 65% 45%,rgba(58,142,240,.07) 0%,transparent 70%),radial-gradient(ellipse 50% 40% at 20% 80%,rgba(126,184,247,.04) 0%,transparent 60%),var(--bg)}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:99px;background:rgba(126,184,247,.08);border:1px solid rgba(126,184,247,.2);color:var(--ac);font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-bottom:22px}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,8vw,6.5rem);letter-spacing:.04em;line-height:.95;margin-bottom:20px}
+.hero-title .hl{color:var(--ac);font-style:italic;display:block}
+.hero-sub{color:var(--muted);font-size:1.05rem;margin-bottom:36px;max-width:400px;line-height:1.7}
+.btn-row{display:flex;gap:14px;flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:9px;padding:12px 26px;border-radius:99px;background:var(--ac2);color:#fff;font-weight:700;font-size:.9rem;font-family:'Barlow Condensed',sans-serif;letter-spacing:.07em;font-style:italic;box-shadow:0 0 24px rgba(58,142,240,.35);transition:transform .2s,box-shadow .2s}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(58,142,240,.5)}
+.btn-ghost{display:inline-flex;align-items:center;gap:9px;padding:12px 26px;border-radius:99px;border:1px solid var(--bh);color:var(--ac);font-weight:500;font-size:.9rem;font-family:'Barlow Condensed',sans-serif;letter-spacing:.07em;font-style:italic;transition:background .2s,border-color .2s}
+.btn-ghost:hover{background:rgba(126,184,247,.08);border-color:var(--ac)}
+.hero-visual{display:flex;justify-content:center;align-items:flex-end;position:relative;padding-bottom:64px}
+.hero-glow-blob{position:absolute;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(58,142,240,.1) 0%,transparent 70%);filter:blur(40px);top:50%;left:50%;transform:translate(-50%,-50%)}
+.hero-visual img{width:100%;max-width:400px;position:relative;z-index:1;filter:drop-shadow(0 10px 40px rgba(58,142,240,.2))}
+.stats-bar{position:absolute;bottom:0;left:50%;transform:translateX(-50%);display:flex;border-radius:var(--r);overflow:hidden;border:1px solid var(--border);z-index:2;width:max-content}
+.stat-item{text-align:center;padding:14px 28px;border-right:1px solid var(--border);background:rgba(9,23,38,.88);backdrop-filter:blur(20px)}
+.stat-item:last-child{border-right:none}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;color:var(--ac);line-height:1}
+.stat-lbl{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:3px}
+
+/* SECTIONS */
+section{padding:100px 0}
+.section-tag{color:var(--ac);font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;text-align:center;margin-bottom:10px;font-weight:600}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,6vw,5rem);text-align:center;margin-bottom:64px;letter-spacing:.05em;line-height:1}
+.section-title span{color:var(--ac);font-style:italic}
+
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:72px;align-items:center}
+.about-img-card{border-radius:24px;padding:36px;background:linear-gradient(135deg,rgba(9,23,38,.9),rgba(13,30,48,.9));border:1px solid var(--border);box-shadow:0 24px 64px rgba(0,0,0,.4);display:flex;justify-content:center}
+.about-img-card img{width:240px;filter:drop-shadow(0 8px 30px rgba(58,142,240,.18))}
+.about-title{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:.04em;margin-bottom:18px;line-height:1}
+.about-title span{color:var(--ac);font-style:italic}
+.about-body{color:var(--muted);font-size:1rem;line-height:1.75;margin-bottom:14px}
+.clock-wrap{display:inline-flex;align-items:center;gap:12px;padding:12px 20px;border-radius:var(--rsm);background:rgba(126,184,247,.05);border:1px solid var(--border);margin-top:20px}
+.clock-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite}
+.clock-time{font-family:'Bebas Neue',sans-serif;color:var(--ac);font-size:1.4rem;letter-spacing:.12em}
+.clock-tz{color:var(--muted);font-size:.75rem}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+/* PROJECTS */
+.project-featured{border-radius:var(--r);overflow:hidden;border:1px solid var(--border);margin-bottom:20px;position:relative;cursor:pointer}
+.project-featured img{width:100%;height:380px;object-fit:cover;display:block;transition:transform .7s}
+.project-featured:hover img{transform:scale(1.03)}
+.project-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(5,16,29,.92) 0%,transparent 60%)}
+.project-info{position:absolute;bottom:0;left:0;padding:32px}
+.pill{display:inline-block;padding:4px 14px;border-radius:99px;font-size:.7rem;font-weight:700;margin-bottom:10px;margin-right:6px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.06em}
+.pill-client{background:var(--ac2);color:#fff}
+.pill-practice{background:rgba(255,255,255,.1);color:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.2)}
+.pill-new{background:rgba(126,184,247,.12);color:var(--ac);border:1px solid rgba(126,184,247,.3)}
+.project-title{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:#fff;letter-spacing:.05em;line-height:1}
+.projects-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.project-card{border-radius:var(--r);overflow:hidden;border:1px solid var(--border);position:relative;cursor:pointer}
+.project-card img{width:100%;height:210px;object-fit:cover;display:block;transition:transform .7s}
+.project-card:hover img{transform:scale(1.05)}
+.project-card .project-info{padding:16px}
+.project-card .project-title{font-size:1.3rem}
+.projects-empty{text-align:center;color:var(--muted);padding:60px 20px;border:1px dashed var(--border);border-radius:var(--r);grid-column:1/-1;font-size:.95rem}
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.price-card{border-radius:var(--r);padding:32px;display:flex;flex-direction:column;border:1px solid var(--border);background:linear-gradient(160deg,rgba(9,23,38,.9),rgba(7,17,30,.9));transition:border-color .35s,box-shadow .35s,transform .25s;position:relative;cursor:pointer}
+.price-card:hover{border-color:var(--bh);box-shadow:0 8px 48px rgba(58,142,240,.12);transform:translateY(-4px)}
+.price-card.popular{border-color:rgba(126,184,247,.4);box-shadow:0 0 40px rgba(58,142,240,.14)}
+.popular-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,var(--ac2),var(--ac));color:#fff;padding:5px 18px;border-radius:99px;font-size:.68rem;font-weight:800;white-space:nowrap;letter-spacing:.08em;font-family:'Barlow Condensed',sans-serif}
+.price-icon-box{width:46px;height:46px;border-radius:14px;background:rgba(126,184,247,.1);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-bottom:22px;color:var(--ac)}
+.price-name{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;letter-spacing:.05em;margin-bottom:8px;line-height:1}
+.price-euro{font-family:'Bebas Neue',sans-serif;font-size:3.2rem;letter-spacing:.02em;line-height:1}
+.price-robux{color:var(--ac);font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;margin-top:4px;font-style:italic}
+.price-tax{color:var(--muted);font-size:.75rem}
+.delivery-box{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:9px;background:rgba(126,184,247,.05);border:1px solid var(--border);margin:18px 0;font-size:.8rem;color:var(--muted)}
+.price-features{list-style:none;flex:1;margin-bottom:24px}
+.price-features li{display:flex;align-items:center;gap:10px;font-size:.87rem;color:rgba(255,255,255,.65);padding:7px 0;border-bottom:1px solid rgba(126,184,247,.05)}
+.price-features li:last-child{border-bottom:none}
+.price-features li svg{color:var(--ac);flex-shrink:0}
+.price-btn-primary{display:block;text-align:center;padding:13px;border-radius:12px;background:linear-gradient(135deg,var(--ac2),var(--ac));color:#fff;font-weight:800;font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;letter-spacing:.08em;font-style:italic;box-shadow:0 4px 20px rgba(58,142,240,.3);transition:opacity .25s,transform .2s}
+.price-btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+.price-btn-ghost{display:block;text-align:center;padding:13px;border-radius:12px;border:1px solid var(--bh);color:var(--ac);font-weight:600;font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;letter-spacing:.08em;font-style:italic;transition:background .25s,border-color .25s,transform .2s}
+.price-btn-ghost:hover{background:rgba(126,184,247,.08);border-color:var(--ac);transform:translateY(-1px)}
+
+/* REVIEWS */
+.reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:64px}
+.review-card{border-radius:var(--r);padding:28px;border:1px solid var(--border);background:linear-gradient(160deg,rgba(9,23,38,.9),rgba(7,16,28,.9));transition:box-shadow .35s,transform .25s,border-color .3s}
+.review-card:hover{box-shadow:0 8px 40px rgba(58,142,240,.1);transform:translateY(-3px);border-color:var(--bh)}
+.stars{display:flex;gap:3px;margin-bottom:14px;color:var(--ac)}
+.review-text{color:var(--muted);font-size:.9rem;line-height:1.75;margin-bottom:22px;font-style:italic}
+.review-author{display:flex;align-items:center;gap:12px}
+.review-author img{width:42px;height:42px;border-radius:10px;object-fit:cover;border:1px solid var(--border)}
+.review-name{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.04em}
+.showcase-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.06em;text-align:center;margin-bottom:24px}
+.showcase-strip{display:flex;gap:14px;overflow-x:auto;padding-bottom:12px;scrollbar-width:thin}
+.showcase-strip img{width:260px;height:148px;object-fit:cover;border-radius:12px;flex-shrink:0;border:1px solid var(--border);transition:transform .3s,border-color .3s}
+.showcase-strip img:hover{transform:scale(1.03);border-color:var(--bh)}
+.reviews-empty,.showcase-empty{text-align:center;color:var(--muted);padding:50px 20px;border:1px dashed var(--border);border-radius:var(--r);font-size:.9rem}
+
+/* CONTACT */
+#contact{text-align:center}
+.contact-subtitle{color:var(--muted);font-size:1.05rem;max-width:480px;margin:0 auto 52px;line-height:1.7}
+.contact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:700px;margin:0 auto}
+.contact-card{border-radius:var(--r);padding:30px 20px;border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;gap:14px;background:linear-gradient(160deg,rgba(9,23,38,.9),rgba(7,16,28,.9));transition:box-shadow .35s,border-color .3s,transform .25s}
+.contact-card:hover{box-shadow:0 8px 40px rgba(58,142,240,.12);border-color:var(--bh);transform:translateY(-4px)}
+.contact-icon-box{width:52px;height:52px;border-radius:16px;background:rgba(126,184,247,.08);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--ac)}
+.contact-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:.04em}
+.contact-handle{color:var(--muted);font-size:.8rem}
+
+/* FOOTER */
+footer{padding:40px 0;border-top:1px solid var(--border)}
+.footer-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;max-width:1160px;margin:0 auto;padding:0 28px}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.05em}
+.footer-logo span{color:var(--ac);font-style:italic}
+.footer-links{display:flex;gap:24px}
+.footer-links a{color:var(--muted);font-size:.82rem;transition:color .25s}
+.footer-links a:hover{color:var(--ac)}
+.footer-copy{color:rgba(160,195,235,.2);font-size:.75rem}
+
+/* ADMIN TOGGLE */
+#admin-toggle{position:fixed;bottom:24px;right:24px;z-index:600;width:46px;height:46px;border-radius:50%;background:rgba(9,23,38,.92);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:border-color .3s,color .3s}
+#admin-toggle:hover{border-color:var(--ac);color:var(--ac)}
+
+/* ADMIN OVERLAY */
+#admin-overlay{display:none;position:fixed;inset:0;z-index:700;background:rgba(5,16,29,.82);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:16px}
+#admin-overlay.open{display:flex}
+.admin-panel{background:var(--s1);border:1px solid var(--border);border-radius:24px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;box-shadow:0 30px 90px rgba(0,0,0,.7);scrollbar-width:thin}
+.ap-header{padding:26px 26px 0;display:flex;align-items:center;justify-content:space-between}
+.ap-header h2{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.06em}
+.ap-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.4rem;line-height:1;transition:color .2s}
+.ap-close:hover{color:var(--white)}
+.ap-body{padding:18px 26px 26px}
+.ap-tabs{display:flex;gap:3px;margin-bottom:22px;background:rgba(126,184,247,.05);border-radius:12px;padding:4px;border:1px solid var(--border)}
+.ap-tab{flex:1;padding:8px 4px;border-radius:9px;background:none;border:none;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.88rem;letter-spacing:.05em;cursor:pointer;transition:background .2s,color .2s;white-space:nowrap}
+.ap-tab.active{background:rgba(58,142,240,.18);color:var(--ac)}
+.ap-section{display:none}
+.ap-section.active{display:block}
+.admin-field{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
+.admin-field label{font-size:.74rem;color:var(--muted);font-weight:600;letter-spacing:.07em;text-transform:uppercase}
+.admin-field input,.admin-field select,.admin-field textarea{background:rgba(126,184,247,.05);border:1px solid var(--border);border-radius:10px;padding:10px 15px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .25s;width:100%}
+.admin-field input:focus,.admin-field select:focus,.admin-field textarea:focus{border-color:var(--ac2)}
+.admin-field textarea{resize:vertical;min-height:78px}
+.admin-field select option{background:var(--s1)}
+.admin-btn{padding:10px 20px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--ac2),var(--ac));color:#fff;font-weight:700;font-family:'Barlow Condensed',sans-serif;font-size:.93rem;letter-spacing:.06em;transition:opacity .2s,transform .2s}
+.admin-btn:hover{opacity:.9;transform:translateY(-1px)}
+.admin-btn.sm{padding:6px 14px;font-size:.8rem}
+.admin-btn.danger{background:rgba(248,113,113,.12);color:#f87171;border:1px solid rgba(248,113,113,.22)}
+.admin-btn.danger:hover{background:rgba(248,113,113,.22)}
+.admin-btn.ghost{background:rgba(126,184,247,.1);color:var(--ac);border:1px solid var(--border)}
+.admin-msg{padding:9px 14px;border-radius:9px;font-size:.83rem;margin-bottom:12px}
+.admin-msg.ok{color:#4ade80;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2)}
+.admin-msg.err{color:#f87171;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2)}
+.sec-title{font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:.08em;color:var(--ac);text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.item-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.item-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(126,184,247,.04);border:1px solid var(--border);border-radius:11px}
+.item-row img{width:54px;height:36px;object-fit:cover;border-radius:7px;flex-shrink:0}
+.item-row-info{flex:1;min-width:0}
+.item-row-title{font-family:'Barlow Condensed',sans-serif;font-size:.88rem;font-weight:700;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-row-sub{font-size:.73rem;color:var(--muted)}
+.file-label{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(126,184,247,.04);border:1px dashed var(--bh);border-radius:10px;cursor:pointer;color:var(--muted);font-size:.88rem;transition:border-color .25s,color .25s}
+.file-label:hover{border-color:var(--ac);color:var(--ac)}
+.file-label input{display:none}
+.upload-preview{width:100%;height:120px;object-fit:cover;border-radius:10px;margin-top:8px;border:1px solid var(--border);display:none}
+.upload-status{font-size:.78rem;color:var(--muted);margin-top:5px}
+.link-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.link-icon{width:36px;height:36px;border-radius:10px;background:rgba(126,184,247,.08);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--ac);flex-shrink:0}
+.link-row input{flex:1;background:rgba(126,184,247,.05);border:1px solid var(--border);border-radius:10px;padding:9px 14px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:.87rem;outline:none;transition:border-color .25s}
+.link-row input:focus{border-color:var(--ac2)}
+.link-row input::placeholder{color:var(--muted)}
+
+/* FADE */
+.fade-in{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s ease}
+.fade-in.visible{opacity:1;transform:none}
+@keyframes ripple{to{transform:scale(2.8);opacity:0}}
+
+/* RESPONSIVE */
 @media(max-width:900px){
-  nav{padding:0 20px}
-  .nav-links{display:none}
-  .hamburger{display:flex}
-  #hero{flex-direction:column;text-align:center;padding-top:80px;min-height:auto;padding-bottom:70px}
-  .hero-btns{justify-content:center}
-  .hero-right{width:100%}
-  .hero-stats{right:auto;left:50%;transform:translateX(-50%)}
-  .about-layout{flex-direction:column;gap:36px;text-align:center}
-  .about-img{width:100%;max-width:280px;height:250px;align-self:center}
-  .clock-wrap{justify-content:center}
-  .pricing-grid{grid-template-columns:1fr;max-width:400px;margin:0 auto}
-  .section,.section-sm{padding:80px 24px 60px}
-  footer{padding:18px 24px}
-  .form-row{grid-template-columns:1fr}
+  .hero-grid,.about-grid{grid-template-columns:1fr}
+  .hero-visual{margin-top:40px}
+  .projects-grid,.pricing-grid,.reviews-grid{grid-template-columns:1fr 1fr}
+  .contact-grid{grid-template-columns:1fr 1fr}
 }
 @media(max-width:600px){
-  .hero-stats{position:relative;bottom:auto;right:auto;left:auto;transform:none;width:100%;justify-content:center;margin-top:16px}
-  .avatar-wrap{display:flex;flex-direction:column;align-items:center;gap:16px}
-  .avatar-img{width:220px;height:220px}
-  .contact-card{width:160px;padding:24px 16px}
-  .section,.section-sm{padding:80px 16px 48px}
-  footer{padding:16px;justify-content:center}
+  .projects-grid,.pricing-grid,.reviews-grid,.contact-grid{grid-template-columns:1fr}
+  .project-featured img{height:220px}
+  .hero-title{font-size:3.6rem}
+  .stats-bar{width:90%;border-radius:14px}
+  .stat-item{padding:12px 16px}
+  .hero-visual{padding-bottom:72px}
+  .about-grid{gap:36px}
 }
 </style>
 </head>
 <body>
+
 <nav>
-  <div class="nav-logo">Hoppi<span>GFX</span></div>
-  <ul class="nav-links">
-    <li><a href="#hero">Home</a></li>
-    <li><a href="#about">About</a></li>
-    <li><a href="#projects">Projects</a></li>
-    <li><a href="#pricing">Pricing</a></li>
-    <li><a href="#reviews">Reviews</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ul>
-  <div style="display:flex;align-items:center;gap:10px">
-    <button class="btn-order-nav" id="nav-order">Order Now</button>
-    <button class="hamburger" id="hamburger" onclick="toggleMenu()">☰</button>
+  <div class="nav-inner">
+    <a href="#hero" class="logo">Hoppi<span>GFX</span></a>
+    <ul class="nav-links">
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#reviews">Reviews</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="nav-right">
+      <a href="#contact" class="order-btn">Order Now</a>
+      <button class="hamburger" onclick="toggleMenu()"><svg width="18" height="14" viewBox="0 0 18 14" fill="none"><rect width="18" height="2" rx="1" fill="currentColor"/><rect y="6" width="13" height="2" rx="1" fill="currentColor"/><rect y="12" width="18" height="2" rx="1" fill="currentColor"/></svg></button>
+    </div>
   </div>
 </nav>
-<div class="mobile-drawer" id="mobile-drawer">
+<div class="mob-menu" id="mob-menu">
   <a href="#hero" onclick="closeMenu()">Home</a>
   <a href="#about" onclick="closeMenu()">About</a>
   <a href="#projects" onclick="closeMenu()">Projects</a>
@@ -232,314 +294,399 @@ textarea.form-input{min-height:85px;resize:vertical}
   <a href="#reviews" onclick="closeMenu()">Reviews</a>
   <a href="#contact" onclick="closeMenu()">Contact</a>
 </div>
-<section id="hero" class="section">
-  <div class="hero-left">
-    <div class="eyebrow">Thumbnail Designer</div>
-    <h1 class="hero-title" id="hero-title-el">High Quality<br><span class="hl">Thumbnails,</span><br>that's HoppiGFX</h1>
-    <p class="hero-sub" id="hero-sub-el"></p>
-    <div class="hero-btns">
-      <button class="btn-outline" onclick="gotoContact()">Who's HoppiGFX? →</button>
-      <button class="btn-solid" id="btn-order-hero" onclick="gotoContact()">Order Now →</button>
-    </div>
-  </div>
-  <div class="hero-right">
-    <div class="avatar-wrap" id="avatar-wrap">
-      <div id="avatar-hero-placeholder" class="avatar-placeholder">No avatar</div>
-      <img id="avatar-hero" class="avatar-img" src="" alt="HoppiGFX" style="display:none">
-      <div class="hero-stats">
-        <div><div class="stat-val" id="stat-commissions">20+</div><div class="stat-lbl">Commissions</div></div>
-        <div><div class="stat-val" id="stat-months">6</div><div class="stat-lbl">Months Exp</div></div>
-        <div><div class="stat-val">100%</div><div class="stat-lbl">Dedication</div></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-eyebrow"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Thumbnail Designer</div>
+        <h1 class="hero-title">High Quality<br/><span class="hl">Thumbnails</span></h1>
+        <p class="hero-sub">Ready to get more views? Premium Roblox thumbnails crafted to get clicks.</p>
+        <div class="btn-row">
+          <a href="#about" class="btn-ghost"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>Who's HoppiGFX?</a>
+          <a href="#contact" class="btn-primary"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>Order Now</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-glow-blob"></div>
+        <img src="https://media.base44.com/images/public/user_69cbf80ea177386dc5a7dd43/63423a1e4_Prifle_picture.png" alt="HoppiGFX"/>
+        <div class="stats-bar glass">
+          <div class="stat-item"><div class="stat-val">20+</div><div class="stat-lbl">Commissions</div></div>
+          <div class="stat-item"><div class="stat-val">6</div><div class="stat-lbl">Months Exp</div></div>
+          <div class="stat-item"><div class="stat-val">100%</div><div class="stat-lbl">Dedication</div></div>
+        </div>
       </div>
     </div>
   </div>
 </section>
-<div class="section-sep"></div>
-<section id="about" class="section about-section">
-  <div class="about-layout">
-    <div style="display:flex;justify-content:center">
-      <img id="avatar-about" class="about-img" src="" alt="HoppiGFX" style="display:none">
-    </div>
-    <div>
-      <div class="eyebrow">Get to Know</div>
-      <h2 class="section-title">Who is <span class="hl">HoppiGFX?</span></h2>
-      <p style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.05rem;margin-bottom:16px">Thumbnails! The thing he does the <span class="hl">best.</span></p>
-      <p class="about-body">HoppiGFX is an experienced thumbnail designer, so if you want to boost your views, message him and get started!</p>
-      <p class="about-body">Specializing in high-quality Roblox thumbnails that capture attention and drive clicks. Every thumbnail is crafted with precision, dynamic compositions, and cinematic lighting.</p>
-      <div class="clock-wrap">
-        <div class="clock-dot"></div>
-        <span class="clock-time" id="live-clock">--:--:--</span>
-        <span class="clock-tz">GMT+2</span>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <p class="section-tag">Get to know</p>
+    <h2 class="section-title">Who is <span>HoppiGFX</span>?</h2>
+    <div class="about-grid">
+      <div style="display:flex;justify-content:center"><div class="about-img-card fade-in"><img src="https://media.base44.com/images/public/user_69cbf80ea177386dc5a7dd43/63423a1e4_Prifle_picture.png" alt="HoppiGFX"/></div></div>
+      <div>
+        <h3 class="about-title">Thumbnails! The thing he does the <span>best</span>.</h3>
+        <p class="about-body">HoppiGFX is an experienced thumbnail designer with 6 months of hands-on experience and over 20 completed commissions. If you want to boost your views, message him and get started!</p>
+        <p class="about-body" style="color:rgba(160,195,235,.32)">Specializing in high-quality Roblox thumbnails that capture attention and drive clicks. Every thumbnail is crafted with precision, dynamic compositions, and cinematic lighting.</p>
+        <p style="color:var(--muted);font-size:.85rem;margin-top:26px;margin-bottom:10px">My local time (always available)</p>
+        <div class="clock-wrap"><div class="clock-dot"></div><span class="clock-time" id="clock">00:00:00</span><span class="clock-tz">GMT+2</span></div>
       </div>
     </div>
   </div>
 </section>
-<div class="section-sep"></div>
-<section id="projects" class="section-sm">
-  <div class="header-center">
-    <div class="eyebrow">Portfolio</div>
-    <h2 class="section-title">My <span class="hl">Projects</span></h2>
-    <p class="section-desc">Click any thumbnail to view full size</p>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="container">
+    <p class="section-tag">Portfolio</p>
+    <h2 class="section-title">My <span>Projects</span></h2>
+    <div id="projects-featured-wrap"></div>
+    <div class="projects-grid" id="projects-grid"><div class="projects-empty">No projects yet — add them from the admin panel.</div></div>
   </div>
-  <div id="projects-container"></div>
 </section>
-<div class="section-sep"></div>
-<section id="pricing" class="section-sm pricing-section">
-  <div class="header-center">
-    <div class="eyebrow">Packages</div>
-    <h2 class="section-title">Pricing</h2>
-  </div>
-  <div class="pricing-grid">
-    <div class="price-card" onclick="gotoContact()">
-      <div class="price-tier"><div class="price-icon">⏱</div> Standard</div>
-      <div class="price-amount">15–20€</div>
-      <div class="price-robux"><span class="robux-badge">R$</span> 2,500 Robux (w/ Tax)</div>
-      <div class="price-delivery">⏱ Delivery: 1–3 Days</div>
-      <ul class="price-features"><li>1 Thumbnail</li><li>High Quality Render</li><li>2 Revisions</li><li>Source File Included</li></ul>
-      <button class="btn-price" id="btn-order-std">Order Now</button>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="container">
+    <p class="section-tag">Investment</p>
+    <h2 class="section-title"><span>Pricing</span></h2>
+    <div class="pricing-grid">
+      <div class="price-card fade-in">
+        <div class="price-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div class="price-name">Standard</div><div class="price-euro">15–20€</div>
+        <div style="margin-top:6px"><span class="price-robux">2,500 Robux</span> <span class="price-tax">(w/ Tax)</span></div>
+        <div class="delivery-box"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Delivery: 1–3 Days</div>
+        <ul class="price-features">
+          <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>1 Thumbnail</li>
+          <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>High Quality Render</li>
+          <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>2 Revisions</li>
+          <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Source File Included</li>
+        </ul>
+        <a href="#contact" class="price-btn-ghost">Order Now</a>
+      </div>
+      <div class="price-card popular fade-in">
+        <div class="popular-badge">MOST POPULAR</div>
+        <div class="price-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+        <div class="price-name">Priority</div><div class="price-euro">25–30€</div>
+        <div style="margin-top:6px"><span class="price-robux">3,000 Robux</span> <span class="price-tax">(w/ Tax)</span></div>
+        <div class="delivery-box"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Delivery: Express</div>
+        <ul class="price-features">
+          <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>1 Thumbnail</li>
+          <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Premium Quality</li>
+          <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Unlimited Revisions</li>
+          <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Source File Included</li>
+          <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Priority Queue</li>
+        </ul>
+        <a href="#contact" class="price-btn-primary">Order Now</a>
+      </div>
+      <div class="price-card fade-in">
+        <div class="price-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div class="price-name">Premium Bundle</div><div class="price-euro">50€</div>
+        <div style="margin-top:6px"><span class="price-robux">5,000 Robux</span> <span class="price-tax">(w/ Tax)</span></div>
+        <div class="delivery-box"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>Delivery: 1–2 Days</div>
+        <ul class="price-features">
+          <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>2 Thumbnails</li>
+          <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Premium Quality</li>
+          <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Unlimited Revisions</li>
+          <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Source Files</li>
+          <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Priority Queue</li>
+          <li><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Matching Style</li>
+        </ul>
+        <a href="#contact" class="price-btn-ghost">Order Now</a>
+      </div>
     </div>
-    <div class="price-card popular" onclick="gotoContact()">
-      <div class="popular-badge">Most Popular</div>
-      <div class="price-tier"><div class="price-icon">⭐</div> Priority</div>
-      <div class="price-amount">25–30€</div>
-      <div class="price-robux"><span class="robux-badge">R$</span> 3,000 Robux (w/ Tax)</div>
-      <div class="price-delivery">⚡ Delivery: Express</div>
-      <ul class="price-features"><li>1 Thumbnail</li><li>Premium Quality</li><li>Unlimited Revisions</li><li>Source File Included</li><li>Priority Queue</li></ul>
-      <button class="btn-price" id="btn-order-pri">Order Now</button>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews">
+  <div class="container">
+    <p class="section-tag">Testimonials</p>
+    <h2 class="section-title">What People <span>Say</span></h2>
+    <div class="reviews-grid" id="reviews-grid"><div class="reviews-empty" style="grid-column:1/-1">No reviews yet — add them from the admin panel.</div></div>
+    <div class="showcase-title">Showcase</div>
+    <div class="showcase-strip" id="showcase-strip"><div class="showcase-empty" style="width:100%">No showcase images yet.</div></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <p class="section-tag">Get in touch</p>
+    <h2 class="section-title">Ready to <span>Order</span>?</h2>
+    <p class="contact-subtitle">Reach out through any of these platforms and let's create something amazing for your channel.</p>
+    <div class="contact-grid">
+      <a href="https://x.com/HoppiGFX" target="_blank" class="contact-card fade-in" data-link="twitter">
+        <div class="contact-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.213 5.567zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div>
+        <div class="contact-name">X (Twitter)</div><div class="contact-handle">@HoppiGFX</div>
+      </a>
+      <a href="#" class="contact-card fade-in" data-link="discord" style="pointer-events:none">
+        <div class="contact-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg></div>
+        <div class="contact-name">Discord</div><div class="contact-handle">Coming Soon</div>
+      </a>
+      <a href="mailto:hoppigfx@gmail.com" class="contact-card fade-in" data-link="email">
+        <div class="contact-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
+        <div class="contact-name">Email</div><div class="contact-handle">hoppigfx@gmail.com</div>
+      </a>
     </div>
-    <div class="price-card" onclick="gotoContact()">
-      <div class="price-tier"><div class="price-icon">🛡</div> Premium Bundle</div>
-      <div class="price-amount">50€</div>
-      <div class="price-robux"><span class="robux-badge">R$</span> 5,000 Robux (w/ Tax)</div>
-      <div class="price-delivery">🚀 Delivery: 1–2 Days</div>
-      <ul class="price-features"><li>2 Thumbnails</li><li>Premium Quality</li><li>Unlimited Revisions</li><li>Source Files Included</li><li>Priority Queue</li><li>Matching Style</li></ul>
-      <button class="btn-price" id="btn-order-bun">Order Now</button>
-    </div>
   </div>
 </section>
-<div class="section-sep"></div>
-<section id="reviews" class="section-sm">
-  <div class="header-center">
-    <div class="eyebrow">Testimonials</div>
-    <h2 class="section-title">What People <span class="hl">Say</span></h2>
-  </div>
-  <div id="reviews-container"></div>
-  <div id="showcase-container"></div>
-</section>
-<div class="section-sep"></div>
-<section id="contact" class="section-sm">
-  <div class="header-center">
-    <div class="eyebrow">Get in Touch</div>
-    <h2 class="section-title">Ready to <span class="hl">Order?</span></h2>
-    <p class="section-desc" style="max-width:460px;margin:10px auto 0">Reach out through any of these platforms and let's create something amazing for your channel.</p>
-  </div>
-  <div class="contact-cards" id="contact-cards-container"></div>
-</section>
+
 <footer>
-  <div class="footer-logo">Hoppi<span>GFX</span></div>
-  <div style="color:var(--muted);font-size:.8rem" id="footer-email">hoppiyt@proton.me</div>
-  <div style="color:var(--muted);font-size:.75rem">© 2026 HoppiGFX. All rights reserved.</div>
-  <button class="footer-admin-btn" onclick="openAdmin()" title="Admin Panel">⚙</button>
+  <div class="footer-inner">
+    <div class="footer-logo">Hoppi<span>GFX</span></div>
+    <div class="footer-links">
+      <a href="https://x.com/HoppiGFX" target="_blank">X (Twitter)</a>
+      <a href="mailto:hoppigfx@gmail.com">Email</a>
+    </div>
+    <div class="footer-copy">© 2026 HoppiGFX. All rights reserved.</div>
+  </div>
 </footer>
-<div class="lightbox" id="lightbox" onclick="closeLightbox()">
-  <button class="lb-close" onclick="closeLightbox()">✕</button>
-  <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
-</div>
-<div class="admin-overlay" id="admin-overlay" onclick="checkOverlayClose(event)">
-  <div class="admin-panel" id="admin-panel">
-    <div class="admin-top">
-      <div class="admin-title-row">⚙ Admin Panel</div>
-      <div class="admin-top-actions">
-        <button class="btn-red-sm" id="btn-logout" onclick="adminLogout()" style="display:none">✕ Logout</button>
-        <button class="btn-ghost-sm" onclick="closeAdmin()">✕ Close</button>
+
+<button id="admin-toggle" onclick="openAdmin()" title="Admin Panel">
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+</button>
+
+<!-- ADMIN PANEL -->
+<div id="admin-overlay" onclick="overlayClick(event)">
+  <div class="admin-panel">
+    <!-- LOGIN -->
+    <div id="ap-login">
+      <div class="ap-header" style="padding-bottom:20px"><h2>Admin Panel</h2><button class="ap-close" onclick="closeAdmin()">✕</button></div>
+      <div class="ap-body">
+        <div id="login-err" style="display:none" class="admin-msg err">Incorrect password.</div>
+        <div class="admin-field"><label>Password</label><input type="password" id="ap-pw" placeholder="Enter password…" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+        <div style="display:flex;gap:10px;margin-top:4px">
+          <button class="admin-btn" onclick="doLogin()">Login</button>
+          <button class="admin-btn ghost" onclick="closeAdmin()">Cancel</button>
+        </div>
       </div>
     </div>
-    <div class="login-box" id="login-box">
-      <div style="font-size:2.5rem">🛡</div>
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem">Admin Panel</div>
-      <p>Enter the admin password to access the panel.</p>
-      <input type="password" id="pw-input" class="form-input" placeholder="Password" style="max-width:280px" onkeydown="if(event.key==='Enter')tryLogin()">
-      <div class="login-err" id="login-err"></div>
-      <button class="admin-btn" onclick="tryLogin()">🛡 Enter</button>
-    </div>
-    <div id="panel-content" style="display:none">
-      <div class="success-bar" id="success-bar" style="display:none">✓ Saved successfully!</div>
-      <div class="admin-tabs">
-        <button class="admin-tab active" onclick="switchTab('general',this)">General</button>
-        <button class="admin-tab" onclick="switchTab('projects',this)">Projects</button>
-        <button class="admin-tab" onclick="switchTab('reviews',this)">Reviews</button>
-        <button class="admin-tab" onclick="switchTab('contact',this)">Contact Links</button>
-      </div>
-      <div class="tab-content active" id="tab-general">
-        <div class="form-group">
-          <label class="form-label">Profile Avatar</label>
-          <label class="upload-btn">📁 Choose Image<input type="file" accept="image/*" style="display:none" onchange="handleAvatarFile(this)"></label>
-          <img id="avatar-preview" class="img-preview" src="" alt="" style="display:none">
+    <!-- DASHBOARD -->
+    <div id="ap-dash" style="display:none">
+      <div class="ap-header"><h2>Control Panel</h2><button class="ap-close" onclick="closeAdmin()">✕</button></div>
+      <div class="ap-body">
+        <div class="ap-tabs">
+          <button class="ap-tab active" onclick="switchTab('projects')">Projects</button>
+          <button class="ap-tab" onclick="switchTab('reviews')">Reviews</button>
+          <button class="ap-tab" onclick="switchTab('showcase')">Showcase</button>
+          <button class="ap-tab" onclick="switchTab('links')">Links</button>
         </div>
-        <div class="form-row">
-          <div class="form-group" style="margin:0"><label class="form-label">Commissions Count</label><input class="form-input" id="g-commissions" placeholder="20+"></div>
-          <div class="form-group" style="margin:0"><label class="form-label">Months Experience</label><input class="form-input" id="g-months" placeholder="6"></div>
-        </div>
-        <div class="form-group"><label class="form-label">Hero Subtitle</label><input class="form-input" id="g-hero-sub" placeholder="Ready to get more Views? Then Order now!"></div>
-        <div class="form-row">
-          <div class="form-group" style="margin:0"><label class="form-label">"Order Now" Button Text</label><input class="form-input" id="g-order-text" placeholder="Order Now"></div>
-          <div class="form-group" style="margin:0"><label class="form-label">Footer Email</label><input class="form-input" id="g-footer-email" placeholder="hoppiyt@proton.me"></div>
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-          <button class="admin-btn" onclick="saveGeneral()">💾 Save General Settings</button>
-          <button class="admin-btn" onclick="downloadSite()" style="background:rgba(62,207,122,.15);border:1px solid rgba(62,207,122,.3);color:#3ecf7a">⬇ Download Site</button>
-        </div>
-      </div>
-      <div class="tab-content" id="tab-projects" style="display:none">
-        <h3 style="font-family:'Syne',sans-serif;font-size:.95rem;margin-bottom:14px">Add New Project</h3>
-        <div class="form-group">
-          <label class="form-label">Thumbnail Image</label>
-          <label class="upload-btn">📁 Choose Image<input type="file" accept="image/*" style="display:none" onchange="handleProjFile(this)"></label>
-          <img id="proj-img-preview" class="img-preview" src="" alt="" style="display:none">
-        </div>
-        <div class="form-row">
-          <div class="form-group" style="margin:0"><label class="form-label">Label</label><input class="form-input" id="p-label" placeholder="Client Thumbnail"></div>
-          <div class="form-group" style="margin:0"><label class="form-label">Tag</label>
-            <select class="form-input" id="p-tag"><option value="">None</option><option value="newest">Newest</option><option value="featured">Featured</option><option value="practice">Practice</option></select>
+
+        <!-- PROJECTS -->
+        <div class="ap-section active" id="tab-projects">
+          <div class="sec-title">Add Project</div>
+          <div id="proj-msg" style="display:none"></div>
+          <div class="admin-field"><label>Title</label><input type="text" id="proj-title" placeholder="e.g. Rivals Arena"/></div>
+          <div class="admin-field"><label>Type</label><select id="proj-type"><option value="client">Client Thumbnail</option><option value="practice">Practice</option></select></div>
+          <div class="admin-field"><label>Featured (large banner at top)</label><select id="proj-featured"><option value="no">No</option><option value="yes">Yes — show as featured</option></select></div>
+          <div class="admin-field">
+            <label>Image</label>
+            <label class="file-label"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span id="proj-fn">Click to select image…</span><input type="file" id="proj-file" accept="image/*" onchange="previewFile('proj-file','proj-prev','proj-fn')"/></label>
+            <img id="proj-prev" class="upload-preview"/><div class="upload-status" id="proj-st"></div>
           </div>
+          <button class="admin-btn" onclick="addProject()" style="margin-bottom:26px">Add Project</button>
+          <div class="sec-title">Current Projects</div>
+          <div class="item-list" id="proj-list"><div style="color:var(--muted);font-size:.83rem">No projects yet.</div></div>
         </div>
-        <label class="checkbox-row"><input type="checkbox" id="p-featured"> Set as Featured (large display at top)</label>
-        <button class="admin-btn" onclick="addProject()">+ Add Project</button>
-        <div class="section-divider-sm"></div>
-        <h3 style="font-family:'Syne',sans-serif;font-size:.95rem;margin-bottom:8px" id="proj-list-title">Existing Projects</h3>
-        <div class="admin-items" id="proj-list"></div>
-      </div>
-      <div class="tab-content" id="tab-reviews" style="display:none">
-        <h3 style="font-family:'Syne',sans-serif;font-size:.95rem;margin-bottom:14px">Add New Review</h3>
-        <div class="form-group"><label class="form-label">Reviewer Name</label><input class="form-input" id="r-name" placeholder="Happy Client"></div>
-        <div class="form-group"><label class="form-label">Review Text</label><textarea class="form-input" id="r-text" placeholder="Amazing thumbnail quality!…"></textarea></div>
-        <div class="form-group"><label class="form-label">Rating</label><div class="stars-picker" id="stars-picker"></div></div>
-        <button class="admin-btn" onclick="addReview()">+ Add Review</button>
-        <div class="section-divider-sm"></div>
-        <h3 style="font-family:'Syne',sans-serif;font-size:.95rem;margin-bottom:8px">Existing Reviews</h3>
-        <div class="admin-items" id="rev-list"></div>
-        <div class="section-divider-sm"></div>
-        <h3 style="font-family:'Syne',sans-serif;font-size:.95rem;margin-bottom:8px">Showcase Gallery</h3>
-        <label class="upload-btn">📁 Add Showcase Image<input type="file" accept="image/*" style="display:none" onchange="handleShowcaseFile(this)"></label>
-        <img id="showcase-preview" class="img-preview" src="" alt="" style="display:none">
-        <button class="admin-btn" onclick="addShowcase()" style="margin-top:10px">+ Add to Showcase</button>
-        <div class="showcase-admin-grid" id="showcase-admin-list"></div>
-      </div>
-      <div class="tab-content" id="tab-contact" style="display:none">
-        <h3 style="font-family:'Syne',sans-serif;font-size:.95rem;margin-bottom:6px">Contact Cards</h3>
-        <p style="color:var(--muted);font-size:.84rem;margin-bottom:16px">Edit the contact cards shown in the Contact section.</p>
-        <div id="contact-cards-editor"></div>
-        <div style="display:flex;gap:10px;margin-top:4px;flex-wrap:wrap">
-          <button class="btn-ghost-sm" onclick="addContactCard()">+ Add Card</button>
-          <button class="admin-btn" onclick="saveContacts()">💾 Save Contacts</button>
+
+        <!-- REVIEWS -->
+        <div class="ap-section" id="tab-reviews">
+          <div class="sec-title">Add Review</div>
+          <div id="rev-msg" style="display:none"></div>
+          <div class="admin-field"><label>Client Name</label><input type="text" id="rev-name" placeholder="e.g. Happy Client"/></div>
+          <div class="admin-field"><label>Review Text</label><textarea id="rev-text" placeholder="What they said…"></textarea></div>
+          <div class="admin-field"><label>Stars</label><select id="rev-stars"><option value="5">★★★★★ (5)</option><option value="4">★★★★ (4)</option><option value="3">★★★ (3)</option></select></div>
+          <div class="admin-field">
+            <label>Avatar Image</label>
+            <label class="file-label"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span id="rev-fn">Click to select image…</span><input type="file" id="rev-file" accept="image/*" onchange="previewFile('rev-file','rev-prev','rev-fn')"/></label>
+            <img id="rev-prev" class="upload-preview"/><div class="upload-status" id="rev-st"></div>
+          </div>
+          <button class="admin-btn" onclick="addReview()" style="margin-bottom:26px">Add Review</button>
+          <div class="sec-title">Current Reviews</div>
+          <div class="item-list" id="rev-list"><div style="color:var(--muted);font-size:.83rem">No reviews yet.</div></div>
         </div>
+
+        <!-- SHOWCASE -->
+        <div class="ap-section" id="tab-showcase">
+          <div class="sec-title">Add Showcase Image</div>
+          <div id="show-msg" style="display:none"></div>
+          <div class="admin-field">
+            <label>Image</label>
+            <label class="file-label"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span id="show-fn">Click to select image…</span><input type="file" id="show-file" accept="image/*" onchange="previewFile('show-file','show-prev','show-fn')"/></label>
+            <img id="show-prev" class="upload-preview"/><div class="upload-status" id="show-st"></div>
+          </div>
+          <button class="admin-btn" onclick="addShowcase()" style="margin-bottom:26px">Add to Showcase</button>
+          <div class="sec-title">Current Showcase</div>
+          <div class="item-list" id="show-list"><div style="color:var(--muted);font-size:.83rem">No images yet.</div></div>
+        </div>
+
+        <!-- LINKS -->
+        <div class="ap-section" id="tab-links">
+          <div class="sec-title">Contact Links</div>
+          <div id="links-msg" style="display:none"></div>
+          <div class="link-row"><div class="link-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.213 5.567zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div><input type="url" id="l-twitter" placeholder="https://x.com/yourname"/></div>
+          <div class="link-row"><div class="link-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg></div><input type="url" id="l-discord" placeholder="https://discord.gg/server"/></div>
+          <div class="link-row"><div class="link-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div><input type="email" id="l-email" placeholder="your@email.com"/></div>
+          <button class="admin-btn" style="margin-top:12px" onclick="saveLinks()">Save Links</button>
+        </div>
+
       </div>
     </div>
   </div>
 </div>
+
 <script>
-const EMBEDDED_DATA = {"settings":{"commissions":"20+","months":"6","avatarUrl":"","heroSub":"Ready to get more Views? Then Order now!","footerEmail":"hoppiyt@proton.me","orderNowText":"Order Now","contactCards":[{"id":"twitter","name":"X (Twitter)","detail":"@HoppiGFX","type":"twitter","url":"https://x.com/HoppiGFX","actionLabel":"Visit"},{"id":"email","name":"Email","detail":"hoppiyt@proton.me","type":"email","url":"mailto:hoppiyt@proton.me","actionLabel":"Send Mail"}]},"projects":[],"reviews":[],"showcase":[]};
-const ADMIN_PW = atob('ZWxQYXVsLTEyMzV2ZQ==');
-const LS_KEY = 'hoppigfx_data';
-let state = loadState();
-let adminLoggedIn = false;
-let pendingAvatarB64 = '';
-let pendingProjB64 = '';
-let pendingShowcaseB64 = '';
-let selectedStars = 5;
-function loadState(){try{const s=localStorage.getItem(LS_KEY);if(s)return JSON.parse(s);}catch(e){}return JSON.parse(JSON.stringify(EMBEDDED_DATA));}
-function saveState(){localStorage.setItem(LS_KEY,JSON.stringify(state));}
-function renderSite(){
-  const s=state.settings;
-  const ot=s.orderNowText||'Order Now';
-  document.getElementById('nav-order').textContent=ot;
-  document.getElementById('btn-order-hero').textContent=ot+' →';
-  document.getElementById('btn-order-std').textContent=ot;
-  document.getElementById('btn-order-pri').textContent=ot;
-  document.getElementById('btn-order-bun').textContent=ot;
-  document.getElementById('hero-sub-el').textContent=s.heroSub||'Ready to get more Views? Then Order now!';
-  document.getElementById('stat-commissions').textContent=s.commissions||'20+';
-  document.getElementById('stat-months').textContent=s.months||'6';
-  if(s.avatarUrl){document.getElementById('avatar-hero').src=s.avatarUrl;document.getElementById('avatar-hero').style.display='block';document.getElementById('avatar-hero-placeholder').style.display='none';document.getElementById('avatar-about').src=s.avatarUrl;document.getElementById('avatar-about').style.display='block';}
-  else{document.getElementById('avatar-hero').style.display='none';document.getElementById('avatar-hero-placeholder').style.display='flex';document.getElementById('avatar-about').style.display='none';}
-  document.getElementById('footer-email').textContent=s.footerEmail||'hoppiyt@proton.me';
-  renderProjects();renderReviews();renderContactCards();
-}
-function renderProjects(){
-  const c=document.getElementById('projects-container');const ps=state.projects||[];
-  if(!ps.length){c.innerHTML='<div class="empty-state">No projects yet</div>';return;}
-  const f=ps.find(p=>p.featured);const g=ps.filter(p=>!p.featured);let h='';
-  if(f)h+=`<div class="featured-thumb" onclick="openLightbox('${f.imageUrl}')"><img src="${f.imageUrl}" alt="${f.label}"><div class="thumb-overlay"><span class="zoom-icon">⊕</span></div><div class="badge-wrap"><span class="badge badge-featured">Featured</span>${f.tag?'<span class="badge">'+f.tag+'</span>':''}</div></div>`;
-  if(g.length)h+='<div class="thumbs-grid">'+g.map(p=>`<div class="thumb-card" onclick="openLightbox('${p.imageUrl}')"><img src="${p.imageUrl}" alt="${p.label}"><div class="thumb-overlay"><span class="zoom-icon">⊕</span></div>${p.tag?'<div class="badge-wrap"><span class="badge">'+p.tag+'</span></div>':''}</div>`).join('')+'</div>';
-  c.innerHTML=h;
-}
-function renderReviews(){
-  const c=document.getElementById('reviews-container');const rs=state.reviews||[];
-  if(!rs.length){c.innerHTML='<div class="empty-state">No reviews yet</div>';return;}
-  c.innerHTML='<div class="reviews-grid">'+rs.map(r=>`<div class="review-card"><div class="stars">${[1,2,3,4,5].map(i=>'<span class="star'+(i<=r.stars?' filled':'')+'">★</span>').join('')}</div><p class="review-text">"${r.text}"</p><div class="reviewer"><div class="reviewer-avatar">${r.avatarUrl?'<img src="'+r.avatarUrl+'" alt="">':'👤'}</div><div class="reviewer-name">${r.name}</div></div></div>`).join('')+'</div>';
-  const sc=document.getElementById('showcase-container');const sw=state.showcase||[];
-  if(sw.length){sc.innerHTML='<hr class="section-divider"><h3 class="showcase-title">Showcase</h3><div class="showcase-grid">'+sw.map(s=>`<div class="showcase-item" onclick="openLightbox('${s.imageUrl}')"><img src="${s.imageUrl}" alt=""></div>`).join('')+'</div>';}
-  else sc.innerHTML='';
-}
-function renderContactCards(){
-  const c=document.getElementById('contact-cards-container');const cards=state.settings.contactCards||[];
-  if(!cards.length){c.innerHTML='';return;}
-  c.innerHTML=cards.map(c=>{const icon={twitter:'𝕏',discord:'🎮',email:'✉️'}[c.type]||'🔗';const tag=c.url?'a':'div';return`<${tag} ${c.url?'href="'+c.url+'" target="_blank" rel="noopener"':''} class="contact-card"><div class="contact-icon">${icon}</div><div class="contact-name">${c.name}</div><div class="contact-detail">${c.detail}</div>${c.url?'<div class="contact-arrow">↗ '+(c.actionLabel||'Visit')+'</div>':''}</${tag}>`;}).join('');
-}
-function toggleMenu(){document.getElementById('mobile-drawer').classList.toggle('open');}
-function closeMenu(){document.getElementById('mobile-drawer').classList.remove('open');}
-function gotoContact(){document.getElementById('contact').scrollIntoView({behavior:'smooth'});closeMenu();}
-document.getElementById('nav-order').onclick=gotoContact;
-function openLightbox(src){document.getElementById('lightbox-img').src=src;document.getElementById('lightbox').classList.add('active');document.body.style.overflow='hidden';}
-function closeLightbox(){document.getElementById('lightbox').classList.remove('active');document.body.style.overflow='';}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeLightbox();closeAdmin();}});
-function updateClock(){const now=new Date();const gmt2=new Date(now.getTime()+2*3600000);const p=n=>String(n).padStart(2,'0');document.getElementById('live-clock').textContent=p(gmt2.getUTCHours())+':'+p(gmt2.getUTCMinutes())+':'+p(gmt2.getUTCSeconds());}
+// CLOCK
+function updateClock(){const now=new Date(),off=now.getTimezoneOffset()*60000,g=new Date(now.getTime()+off+7200000),p=n=>String(n).padStart(2,'0'),el=document.getElementById('clock');if(el)el.textContent=`${p(g.getHours())}:${p(g.getMinutes())}:${p(g.getSeconds())}`}
 updateClock();setInterval(updateClock,1000);
-function openAdmin(){document.getElementById('admin-overlay').classList.add('active');}
-function closeAdmin(){document.getElementById('admin-overlay').classList.remove('active');}
-function checkOverlayClose(e){if(e.target===document.getElementById('admin-overlay'))closeAdmin();}
-function tryLogin(){const pw=document.getElementById('pw-input').value;if(pw===ADMIN_PW){adminLoggedIn=true;document.getElementById('login-box').style.display='none';document.getElementById('panel-content').style.display='block';document.getElementById('btn-logout').style.display='inline-flex';document.getElementById('login-err').textContent='';populateAdminFields();}else{document.getElementById('login-err').textContent='Incorrect password.';}}
-function adminLogout(){adminLoggedIn=false;document.getElementById('login-box').style.display='flex';document.getElementById('panel-content').style.display='none';document.getElementById('btn-logout').style.display='none';document.getElementById('pw-input').value='';}
-function populateAdminFields(){const s=state.settings;document.getElementById('g-commissions').value=s.commissions||'20+';document.getElementById('g-months').value=s.months||'6';document.getElementById('g-hero-sub').value=s.heroSub||'';document.getElementById('g-order-text').value=s.orderNowText||'Order Now';document.getElementById('g-footer-email').value=s.footerEmail||'hoppiyt@proton.me';if(s.avatarUrl){document.getElementById('avatar-preview').src=s.avatarUrl;document.getElementById('avatar-preview').style.display='block';}renderProjList();renderRevList();renderShowcaseAdminList();renderContactEditor();renderStarsPicker();}
-function switchTab(name,btn){document.querySelectorAll('.tab-content').forEach(t=>{t.style.display='none';});document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));document.getElementById('tab-'+name).style.display='block';btn.classList.add('active');}
-function flash(){const b=document.getElementById('success-bar');b.style.display='flex';setTimeout(()=>b.style.display='none',3000);}
-function fileToB64(file,maxW,maxH,quality,cb){const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{let w=img.width,h=img.height;if(w>maxW||h>maxH){const ratio=Math.min(maxW/w,maxH/h);w=Math.round(w*ratio);h=Math.round(h*ratio);}const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);cb(canvas.toDataURL('image/jpeg',quality));};img.src=e.target.result;};r.readAsDataURL(file);}
-function handleAvatarFile(input){const f=input.files[0];if(!f)return;fileToB64(f,600,600,0.85,b64=>{pendingAvatarB64=b64;document.getElementById('avatar-preview').src=b64;document.getElementById('avatar-preview').style.display='block';});}
-function handleProjFile(input){const f=input.files[0];if(!f)return;fileToB64(f,1200,800,0.88,b64=>{pendingProjB64=b64;document.getElementById('proj-img-preview').src=b64;document.getElementById('proj-img-preview').style.display='block';});}
-function handleShowcaseFile(input){const f=input.files[0];if(!f)return;fileToB64(f,800,600,0.85,b64=>{pendingShowcaseB64=b64;document.getElementById('showcase-preview').src=b64;document.getElementById('showcase-preview').style.display='block';});}
-function saveGeneral(){state.settings.commissions=document.getElementById('g-commissions').value;state.settings.months=document.getElementById('g-months').value;state.settings.heroSub=document.getElementById('g-hero-sub').value;state.settings.orderNowText=document.getElementById('g-order-text').value;state.settings.footerEmail=document.getElementById('g-footer-email').value;if(pendingAvatarB64)state.settings.avatarUrl=pendingAvatarB64;saveState();renderSite();flash();}
-function addProject(){if(!pendingProjB64)return alert('Please choose an image first.');state.projects.push({id:Date.now().toString(),imageUrl:pendingProjB64,label:document.getElementById('p-label').value,tag:document.getElementById('p-tag').value,featured:document.getElementById('p-featured').checked});pendingProjB64='';document.getElementById('proj-img-preview').style.display='none';document.getElementById('p-label').value='';document.getElementById('p-tag').value='';document.getElementById('p-featured').checked=false;saveState();renderSite();renderProjList();flash();}
-function deleteProject(id){state.projects=state.projects.filter(p=>p.id!==id);saveState();renderSite();renderProjList();flash();}
-function renderProjList(){const list=document.getElementById('proj-list');document.getElementById('proj-list-title').textContent='Existing Projects ('+state.projects.length+')';if(!state.projects.length){list.innerHTML='<div class="empty-muted">No projects yet.</div>';return;}list.innerHTML=state.projects.map(p=>`<div class="admin-item"><img src="${p.imageUrl}" style="width:60px;height:40px;object-fit:cover;border-radius:6px;flex-shrink:0" alt=""><div style="flex:1;min-width:0"><div style="font-size:.84rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.label||'Untitled'}</div><div style="font-size:.73rem;color:var(--muted);margin-top:2px">${p.tag?'Tag: '+p.tag:''}${p.featured?' · Featured':''}</div></div><button class="btn-danger" onclick="deleteProject('${p.id}')">✕ Remove</button></div>`).join('');}
-function renderStarsPicker(){const picker=document.getElementById('stars-picker');picker.innerHTML=[1,2,3,4,5].map(s=>`<button onclick="selectStar(${s})" style="background:none;border:none;cursor:pointer;padding:0;font-size:1.5rem;color:${s<=selectedStars?'var(--gold)':'var(--muted)'}">${s<=selectedStars?'★':'☆'}</button>`).join('');}
-function selectStar(n){selectedStars=n;renderStarsPicker();}
-function addReview(){const name=document.getElementById('r-name').value.trim();const text=document.getElementById('r-text').value.trim();if(!name||!text)return alert('Name and text are required.');state.reviews.push({id:Date.now().toString(),name,text,stars:selectedStars,avatarUrl:''});document.getElementById('r-name').value='';document.getElementById('r-text').value='';selectedStars=5;renderStarsPicker();saveState();renderSite();renderRevList();flash();}
-function deleteReview(id){state.reviews=state.reviews.filter(r=>r.id!==id);saveState();renderSite();renderRevList();flash();}
-function renderRevList(){const list=document.getElementById('rev-list');if(!state.reviews.length){list.innerHTML='<div class="empty-muted">No reviews yet.</div>';return;}list.innerHTML=state.reviews.map(r=>`<div class="admin-item"><div style="flex:1;min-width:0"><div style="font-size:.84rem;font-weight:600">${r.name}</div><div style="font-size:.73rem;color:var(--muted);margin-top:2px">${'★'.repeat(r.stars)} · ${r.text.slice(0,55)}${r.text.length>55?'…':''}</div></div><button class="btn-danger" onclick="deleteReview('${r.id}')">✕ Remove</button></div>`).join('');}
-function addShowcase(){if(!pendingShowcaseB64)return alert('Please choose an image first.');state.showcase.push({id:Date.now().toString(),imageUrl:pendingShowcaseB64});pendingShowcaseB64='';document.getElementById('showcase-preview').style.display='none';saveState();renderSite();renderShowcaseAdminList();flash();}
-function deleteShowcase(id){state.showcase=state.showcase.filter(s=>s.id!==id);saveState();renderSite();renderShowcaseAdminList();flash();}
-function renderShowcaseAdminList(){const list=document.getElementById('showcase-admin-list');list.innerHTML=state.showcase.map(s=>`<div class="showcase-admin-item"><img src="${s.imageUrl}" alt=""><button class="showcase-admin-del" onclick="deleteShowcase('${s.id}')">✕</button></div>`).join('');}
-function renderContactEditor(){const el=document.getElementById('contact-cards-editor');el.innerHTML=(state.settings.contactCards||[]).map((c,i)=>`<div class="contact-card-block"><div class="contact-card-block-hd"><span class="contact-card-block-label">Card #${i+1}</span><button class="btn-danger" onclick="removeContactCard(${i})">✕ Remove</button></div><div class="form-row" style="margin-bottom:10px"><div><label class="form-label">Name</label><input class="form-input" value="${c.name}" onchange="updateCard(${i},'name',this.value)"></div><div><label class="form-label">Detail / Handle</label><input class="form-input" value="${c.detail}" onchange="updateCard(${i},'detail',this.value)"></div></div><div class="form-row" style="margin-bottom:0"><div><label class="form-label">URL</label><input class="form-input" value="${c.url}" placeholder="https://…" onchange="updateCard(${i},'url',this.value)"></div><div><label class="form-label">Type (icon)</label><select class="form-input" onchange="updateCard(${i},'type',this.value)">${['twitter','discord','email','custom'].map(t=>'<option value="'+t+'"'+(c.type===t?' selected':'')+'>'+t+'</option>').join('')}</select></div></div></div>`).join('');}
-function updateCard(i,field,val){state.settings.contactCards[i][field]=val;}
-function addContactCard(){state.settings.contactCards.push({id:Date.now().toString(),name:'New Contact',detail:'',type:'custom',url:'',actionLabel:'Visit'});renderContactEditor();}
-function removeContactCard(i){state.settings.contactCards.splice(i,1);renderContactEditor();}
-function saveContacts(){saveState();renderSite();flash();}
-function downloadSite(){
-  const html=generateCurrentHtml();
-  const blob=new Blob([html],{type:'text/html'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='hoppigfx.html';
-  a.click();
-  URL.revokeObjectURL(a.href);
+
+// NAV
+function toggleMenu(){document.getElementById('mob-menu').classList.toggle('open')}
+function closeMenu(){document.getElementById('mob-menu').classList.remove('open')}
+window.addEventListener('scroll',()=>{document.querySelector('nav').style.padding=window.scrollY>60?'9px 0':'13px 0'});
+
+// ADMIN AUTH
+const PASS='elPaul-1235ve';
+function openAdmin(){document.getElementById('admin-overlay').classList.add('open')}
+function closeAdmin(){document.getElementById('admin-overlay').classList.remove('open')}
+function overlayClick(e){if(e.target===document.getElementById('admin-overlay'))closeAdmin()}
+function doLogin(){
+  if(document.getElementById('ap-pw').value===PASS){
+    document.getElementById('ap-login').style.display='none';
+    document.getElementById('ap-dash').style.display='block';
+    prefillLinks();refreshAdminLists();
+  } else {document.getElementById('login-err').style.display='block';document.getElementById('ap-pw').value=''}
 }
-function generateCurrentHtml(){
-  return document.documentElement.outerHTML.replace(
-    /const EMBEDDED_DATA = \{[^}]+\}[^;]*;/,
-    'const EMBEDDED_DATA = '+JSON.stringify(state)+';'
-  );
+function switchTab(n){
+  document.querySelectorAll('.ap-tab').forEach((t,i)=>t.classList.toggle('active',['projects','reviews','showcase','links'][i]===n));
+  document.querySelectorAll('.ap-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('tab-'+n).classList.add('active');
 }
-renderSite();
+
+// FILE PREVIEW
+function previewFile(iid,pid,nid){const f=document.getElementById(iid).files[0];if(!f)return;document.getElementById(nid).textContent=f.name;const r=new FileReader();r.onload=e=>{const img=document.getElementById(pid);img.src=e.target.result;img.style.display='block'};r.readAsDataURL(f)}
+
+// UPLOAD
+async function uploadImage(iid,sid,folder){
+  const file=document.getElementById(iid).files[0];if(!file)return null;
+  const st=document.getElementById(sid);st.textContent='Uploading…';
+  try{
+    const{storage,sRef,uploadBytes,getDownloadURL}=window._fb;
+    const snap=await uploadBytes(sRef(storage,`${folder}/${Date.now()}_${file.name}`),file);
+    const url=await getDownloadURL(snap.ref);st.textContent='✓ Uploaded';return url;
+  }catch(err){st.textContent='Failed: '+err.message;return null}
+}
+
+// MSG
+function showMsg(id,text,type='ok'){const el=document.getElementById(id);el.className='admin-msg '+type;el.textContent=text;el.style.display='block';setTimeout(()=>el.style.display='none',3000)}
+
+// ADD PROJECT
+async function addProject(){
+  const title=document.getElementById('proj-title').value.trim();
+  if(!title){showMsg('proj-msg','Enter a title.','err');return}
+  const url=await uploadImage('proj-file','proj-st','projects');
+  if(!url){showMsg('proj-msg','Select an image.','err');return}
+  const{db,ref,push}=window._fb;
+  await push(ref(db,'projects'),{title,type:document.getElementById('proj-type').value,featured:document.getElementById('proj-featured').value==='yes',url,ts:Date.now()});
+  document.getElementById('proj-title').value='';document.getElementById('proj-file').value='';
+  document.getElementById('proj-prev').style.display='none';document.getElementById('proj-fn').textContent='Click to select image…';
+  document.getElementById('proj-st').textContent='';showMsg('proj-msg','Project added!','ok');
+}
+
+// ADD REVIEW
+async function addReview(){
+  const name=document.getElementById('rev-name').value.trim(),text=document.getElementById('rev-text').value.trim();
+  if(!name||!text){showMsg('rev-msg','Fill in name and review.','err');return}
+  const url=await uploadImage('rev-file','rev-st','reviews');
+  const{db,ref,push}=window._fb;
+  await push(ref(db,'reviews'),{name,text,stars:parseInt(document.getElementById('rev-stars').value),avatar:url||'',ts:Date.now()});
+  document.getElementById('rev-name').value='';document.getElementById('rev-text').value='';
+  document.getElementById('rev-file').value='';document.getElementById('rev-prev').style.display='none';
+  document.getElementById('rev-fn').textContent='Click to select image…';document.getElementById('rev-st').textContent='';
+  showMsg('rev-msg','Review added!','ok');
+}
+
+// ADD SHOWCASE
+async function addShowcase(){
+  const url=await uploadImage('show-file','show-st','showcase');
+  if(!url){showMsg('show-msg','Select an image.','err');return}
+  const{db,ref,push}=window._fb;
+  await push(ref(db,'showcase'),{url,ts:Date.now()});
+  document.getElementById('show-file').value='';document.getElementById('show-prev').style.display='none';
+  document.getElementById('show-fn').textContent='Click to select image…';document.getElementById('show-st').textContent='';
+  showMsg('show-msg','Added!','ok');
+}
+
+// DELETE
+async function deleteItem(path){if(!confirm('Delete this?'))return;const{db,ref,remove}=window._fb;await remove(ref(db,path))}
+
+// SAVE LINKS
+async function saveLinks(){
+  const{db,ref,set}=window._fb;
+  await set(ref(db,'siteLinks'),{twitter:document.getElementById('l-twitter').value.trim(),discord:document.getElementById('l-discord').value.trim(),email:document.getElementById('l-email').value.trim()});
+  showMsg('links-msg','Links saved!','ok');
+}
+function prefillLinks(){const l=window._links||{};document.getElementById('l-twitter').value=l.twitter||'';document.getElementById('l-discord').value=l.discord||'';document.getElementById('l-email').value=l.email||''}
+
+// REFRESH ADMIN LISTS
+function refreshAdminLists(){
+  // Projects
+  const pd=window._projects||{},pl=document.getElementById('proj-list'),pk=Object.keys(pd);
+  pl.innerHTML=pk.length?pk.map(k=>`<div class="item-row"><img src="${pd[k].url}" alt=""/><div class="item-row-info"><div class="item-row-title">${pd[k].title}</div><div class="item-row-sub">${pd[k].type}${pd[k].featured?' · Featured':''}</div></div><button class="admin-btn sm danger" onclick="deleteItem('projects/${k}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></div>`).join(''):'<div style="color:var(--muted);font-size:.83rem">No projects yet.</div>';
+  // Reviews
+  const rd=window._reviews||{},rl=document.getElementById('rev-list'),rk=Object.keys(rd);
+  rl.innerHTML=rk.length?rk.map(k=>`<div class="item-row">${rd[k].avatar?`<img src="${rd[k].avatar}" alt=""/>`:'<div style="width:54px;height:36px;border-radius:7px;background:rgba(126,184,247,.08);flex-shrink:0"></div>'}<div class="item-row-info"><div class="item-row-title">${rd[k].name}</div><div class="item-row-sub">${'★'.repeat(rd[k].stars)} — ${rd[k].text.substring(0,36)}…</div></div><button class="admin-btn sm danger" onclick="deleteItem('reviews/${k}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></div>`).join(''):'<div style="color:var(--muted);font-size:.83rem">No reviews yet.</div>';
+  // Showcase
+  const sd=window._showcase||{},sl=document.getElementById('show-list'),sk=Object.keys(sd);
+  sl.innerHTML=sk.length?sk.map(k=>`<div class="item-row"><img src="${sd[k].url}" alt=""/><div class="item-row-info"><div class="item-row-title">Showcase Image</div></div><button class="admin-btn sm danger" onclick="deleteItem('showcase/${k}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></div>`).join(''):'<div style="color:var(--muted);font-size:.83rem">No images yet.</div>';
+}
+window._refreshAdmin = refreshAdminLists;
+
+// RENDER PROJECTS
+window.renderProjects = function(data){
+  const keys=Object.keys(data).sort((a,b)=>(data[b].ts||0)-(data[a].ts||0));
+  const fw=document.getElementById('projects-featured-wrap'),gr=document.getElementById('projects-grid');
+  if(!keys.length){fw.innerHTML='';gr.innerHTML='<div class="projects-empty">No projects yet — add them from the admin panel.</div>';return}
+  const feat=keys.filter(k=>data[k].featured),rest=keys.filter(k=>!data[k].featured);
+  if(feat.length){const f=data[feat[0]];fw.innerHTML=`<div class="project-featured"><img src="${f.url}" alt="${f.title}"/><div class="project-overlay"></div><div class="project-info"><span class="pill pill-${f.type==='client'?'client':'practice'}">${f.type==='client'?'Client Thumbnail':'Practice'}</span><span class="pill pill-new">✦ Newest Work</span><div class="project-title">${f.title}</div></div></div>`;}
+  else fw.innerHTML='';
+  gr.innerHTML=rest.length?rest.map(k=>`<div class="project-card"><img src="${data[k].url}" alt="${data[k].title}"/><div class="project-overlay"></div><div class="project-info"><span class="pill pill-${data[k].type==='client'?'client':'practice'}">${data[k].type==='client'?'Client':'Practice'}</span><div class="project-title">${data[k].title}</div></div></div>`).join(''):'';
+};
+
+// RENDER REVIEWS
+window.renderReviews = function(data){
+  const keys=Object.keys(data).sort((a,b)=>(data[b].ts||0)-(data[a].ts||0));
+  const gr=document.getElementById('reviews-grid');
+  const star='<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+  gr.innerHTML=keys.length?keys.map(k=>`<div class="review-card fade-in"><div class="stars">${star.repeat(data[k].stars)}</div><p class="review-text">"${data[k].text}"</p><div class="review-author">${data[k].avatar?`<img src="${data[k].avatar}" alt=""/>`:'<div style="width:42px;height:42px;border-radius:10px;background:rgba(126,184,247,.08);flex-shrink:0"></div>'}<span class="review-name">${data[k].name}</span></div></div>`).join(''):'<div class="reviews-empty" style="grid-column:1/-1">No reviews yet — add them from the admin panel.</div>';
+  observeFade();
+};
+
+// RENDER SHOWCASE
+window.renderShowcase = function(data){
+  const keys=Object.keys(data).sort((a,b)=>(data[b].ts||0)-(data[a].ts||0));
+  const strip=document.getElementById('showcase-strip');
+  strip.innerHTML=keys.length?keys.map(k=>`<img src="${data[k].url}" alt="Showcase"/>`).join(''):'<div class="showcase-empty" style="width:100%">No showcase images yet.</div>';
+};
+
+// RIPPLE
+document.querySelectorAll('.btn-primary,.btn-ghost,.order-btn,.price-btn-primary,.price-btn-ghost').forEach(btn=>{
+  btn.addEventListener('click',function(e){
+    const rect=this.getBoundingClientRect(),r=document.createElement('span'),s=Math.max(rect.width,rect.height);
+    r.style.cssText=`position:absolute;border-radius:50%;background:rgba(255,255,255,.2);width:${s}px;height:${s}px;left:${e.clientX-rect.left-s/2}px;top:${e.clientY-rect.top-s/2}px;transform:scale(0);animation:ripple .5s ease-out;pointer-events:none;z-index:1`;
+    this.style.position='relative';this.style.overflow='hidden';this.appendChild(r);setTimeout(()=>r.remove(),500);
+  });
+});
+
+// SCROLL FADE
+const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}}),{threshold:.08});
+function observeFade(){document.querySelectorAll('.fade-in:not(.visible)').forEach((el,i)=>{el.style.transitionDelay=`${(i%3)*.1}s`;io.observe(el)})}
+observeFade();
 </script>
 </body>
 </html>
