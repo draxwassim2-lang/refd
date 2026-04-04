@@ -54,7 +54,7 @@ onValue(ref(db,'siteLinks'), snap => {
 });
 onValue(ref(db,'projects'), snap => { window._projects=snap.val()||{}; window.renderProjects&&window.renderProjects(window._projects); window._refreshAdmin&&window._refreshAdmin(); });
 onValue(ref(db,'reviews'),  snap => { window._reviews=snap.val()||{};  window.renderReviews&&window.renderReviews(window._reviews);   window._refreshAdmin&&window._refreshAdmin(); });
-onValue(ref(db,'showcase'), snap => { window._showcase=snap.val()||{}; window.renderShowcase&&window.renderShowcase(window._showcase); window._refreshAdmin&&window._refreshAdmin(); });
+onValue(ref(db,'showcase'), snap => { window._showcase=snap.val()||{}; window._refreshAdmin&&window._refreshAdmin(); });
 onValue(ref(db,'pricing'),  snap => { window._pricing=snap.val()||null; window.renderPricing&&window.renderPricing(window._pricing);   window._refreshAdmin&&window._refreshAdmin(); });
 </script>
 
@@ -79,7 +79,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 /* ── NAV ── */
 nav{position:fixed;top:0;left:0;right:0;z-index:500;padding:13px 0;background:rgba(5,16,29,.9);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);transition:padding .3s}
 .nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1160px;margin:0 auto;padding:0 28px}
-.logo{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:.06em;line-height:1}
+.logo{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:700;font-style:italic;letter-spacing:.08em;line-height:1}
 .logo span{color:var(--ac);font-style:italic}
 .nav-links{display:flex;gap:26px;list-style:none}
 .nav-links a{color:var(--muted);font-size:.84rem;font-weight:500;transition:color .25s}
@@ -155,10 +155,10 @@ section{padding:100px 0}
 .work-filter-btn{padding:9px 24px;border-radius:99px;border:1px solid var(--border);background:none;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:600;letter-spacing:.06em;cursor:pointer;transition:all .25s}
 .work-filter-btn:hover{border-color:var(--bh);color:var(--white)}
 .work-filter-btn.active{background:var(--ac2);border-color:var(--ac2);color:#fff;box-shadow:0 0 20px rgba(58,142,240,.35)}
-.work-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.work-card{border-radius:14px;overflow:hidden;position:relative;cursor:pointer;background:#040d18;border:1px solid var(--border);transition:transform .3s,border-color .3s,box-shadow .3s;aspect-ratio:16/9}
+.work-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.work-card{border-radius:12px;overflow:hidden;position:relative;cursor:pointer;background:#040d18;border:1px solid var(--border);transition:transform .3s,border-color .3s,box-shadow .3s;aspect-ratio:16/9}
 .work-card:hover{transform:translateY(-4px) scale(1.01);border-color:var(--bh);box-shadow:0 12px 40px rgba(0,0,0,.5)}
-.work-card img{width:100%;height:100%;object-fit:contain;display:block;transition:transform .5s}
+.work-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
 .work-card:hover img{transform:scale(1.04)}
 .work-card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(5,16,29,.85) 0%,transparent 50%);opacity:0;transition:opacity .3s}
 .work-card:hover .work-card-overlay{opacity:1}
@@ -171,10 +171,10 @@ section{padding:100px 0}
 .work-card-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:#fff;letter-spacing:.04em;line-height:1.1}
 .work-empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:60px 20px;border:1px dashed var(--border);border-radius:var(--r);font-size:.95rem}
 .work-card.hidden{display:none}
+.work-dl-btn{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:9px;background:rgba(5,16,29,.75);backdrop-filter:blur(8px);border:1px solid rgba(126,184,247,.25);color:var(--ac);display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(-4px);transition:opacity .25s,transform .25s,background .2s;z-index:3}
+.work-card:hover .work-dl-btn{opacity:1;transform:translateY(0)}
+.work-dl-btn:hover{background:var(--ac2);border-color:var(--ac2);color:#fff}
 
-/* Featured work card */
-.work-featured{grid-column:span 2;aspect-ratio:auto;height:340px}
-.work-featured img{object-fit:contain}
 
 /* ── PRICING ── */
 .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
@@ -210,14 +210,6 @@ section{padding:100px 0}
 .reviews-empty{text-align:center;color:var(--muted);padding:50px 20px;border:1px dashed var(--border);border-radius:var(--r);font-size:.9rem;grid-column:1/-1}
 
 /* ── SHOWCASE ── */
-.showcase-section{margin-top:0}
-.showcase-label{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.06em;margin-bottom:18px;color:var(--white)}
-.showcase-label span{color:var(--ac);font-style:italic}
-.showcase-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.showcase-item{border-radius:12px;overflow:hidden;border:1px solid var(--border);background:#040d18;aspect-ratio:16/9;cursor:pointer;transition:transform .3s,border-color .3s}
-.showcase-item:hover{transform:scale(1.02);border-color:var(--bh)}
-.showcase-item img{width:100%;height:100%;object-fit:contain;display:block}
-.showcase-empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:40px 20px;border:1px dashed var(--border);border-radius:var(--r);font-size:.9rem}
 
 /* ── CONTACT ── */
 #contact{text-align:center}
@@ -321,18 +313,37 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
   .contact-grid{grid-template-columns:1fr 1fr}
   .work-grid{grid-template-columns:1fr 1fr}
   .work-featured{grid-column:span 2}
-  .showcase-grid{grid-template-columns:1fr 1fr 1fr}
+  .section-title{font-size:clamp(2.2rem,5vw,4rem)}
 }
 @media(max-width:600px){
+  .container{padding:0 16px}
+  section{padding:70px 0}
   .pricing-grid,.reviews-grid,.contact-grid{grid-template-columns:1fr}
-  .work-grid{grid-template-columns:1fr 1fr}
+  .work-grid{grid-template-columns:1fr}
   .work-featured{grid-column:1/-1}
-  .hero-title{font-size:3.6rem}
-  .stats-bar{width:90%;border-radius:14px}
-  .stat-item{padding:12px 16px}
-  .hero-visual{padding-bottom:72px}
-  .about-grid{gap:36px}
-  .showcase-grid{grid-template-columns:1fr 1fr}
+  .hero-title{font-size:3.2rem}
+  .hero-sub{font-size:.95rem}
+  .btn-row{flex-direction:column;align-items:flex-start}
+  .btn-primary,.btn-ghost{width:100%;justify-content:center}
+  .stats-bar{width:95%;border-radius:14px;flex-wrap:wrap}
+  .stat-item{padding:10px 14px;flex:1;min-width:80px}
+  .hero-visual{padding-bottom:80px}
+  .about-grid{gap:28px}
+  .about-avatar-card img{width:160px;height:160px}
+  .section-title{font-size:2.4rem}
+  .pc-monitor{max-width:300px;margin:0 auto}
+  .footer-inner{flex-direction:column;text-align:center}
+  .footer-links{justify-content:center}
+  .ap-tabs{gap:2px}
+  .ap-tab{font-size:.75rem;padding:7px 2px}
+  .admin-panel{border-radius:16px}
+  #hero{padding:100px 0 60px}
+}
+@media(max-width:380px){
+  .hero-title{font-size:2.7rem}
+  .stat-item{padding:8px 10px}
+  .stats-bar{width:98%}
+  .work-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -446,10 +457,7 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
     <p class="section-tag">Portfolio</p>
     <h2 class="section-title">Past <span>Work</span></h2>
     <div class="work-filter-bar">
-      <button class="work-filter-btn active" onclick="filterWork('all')">All</button>
-      <button class="work-filter-btn" onclick="filterWork('realistic')">Realistic</button>
-      <button class="work-filter-btn" onclick="filterWork('cartoony')">Cartoony</button>
-      <button class="work-filter-btn" onclick="filterWork('before-after')">Before / After</button>
+      <button class="work-filter-btn active" id="btn-realistic">Realistic</button>
     </div>
     <div class="work-grid" id="work-grid">
       <div class="work-empty">No projects yet — add them from the admin panel.</div>
@@ -477,12 +485,6 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
       <div class="reviews-empty">No reviews yet — add them from the admin panel.</div>
     </div>
 
-    <div class="showcase-section">
-      <div class="showcase-label">Showcase <span>Gallery</span></div>
-      <div class="showcase-grid" id="showcase-grid">
-        <div class="showcase-empty">No showcase images yet.</div>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -503,10 +505,10 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
         <div class="contact-name">Discord</div>
         <div class="contact-handle">Coming Soon</div>
       </a>
-      <a href="mailto:hoppigfx@gmail.com" class="contact-card fade-in" data-link="email">
+      <a href="/cdn-cgi/l/email-protection#2840475858414f4e50684f45494144064b4745" class="contact-card fade-in" data-link="email">
         <div class="contact-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
         <div class="contact-name">Email</div>
-        <div class="contact-handle">hoppigfx@gmail.com</div>
+        <div class="contact-handle"><span class="__cf_email__" data-cfemail="2f47405f5f464849576f48424e4643014c4042">[email&#160;protected]</span></div>
       </a>
     </div>
   </div>
@@ -524,7 +526,7 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
 </footer>
 
 <!-- Admin toggle -->
-<button id="admin-toggle" onclick="openAdmin()" title="Admin Panel">
+<button id="admin-toggle" title="Admin Panel">
   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
 </button>
 
@@ -560,7 +562,6 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
         <div class="ap-tabs">
           <button class="ap-tab active" onclick="switchTab('projects')">Projects</button>
           <button class="ap-tab" onclick="switchTab('reviews')">Reviews</button>
-          <button class="ap-tab" onclick="switchTab('showcase')">Showcase</button>
           <button class="ap-tab" onclick="switchTab('pricing')">Pricing</button>
           <button class="ap-tab" onclick="switchTab('links')">Links</button>
         </div>
@@ -642,25 +643,6 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
           <div class="item-list" id="rev-list"><div style="color:var(--muted);font-size:.83rem">No reviews yet.</div></div>
         </div>
 
-        <!-- SHOWCASE TAB -->
-        <div class="ap-section" id="tab-showcase">
-          <div class="sec-title">Add Showcase Image</div>
-          <div id="show-msg" style="display:none"></div>
-          <div class="admin-field">
-            <label>Image</label>
-            <label class="file-label">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              <span id="show-fn">Click to select image…</span>
-              <input type="file" id="show-file" accept="image/*" onchange="previewFile('show-file','show-prev','show-fn')"/>
-            </label>
-            <img id="show-prev" class="upload-preview"/>
-            <div class="upload-progress" id="show-prog"><div class="upload-progress-bar" id="show-prog-bar"></div></div>
-            <div class="upload-status" id="show-st"></div>
-          </div>
-          <button class="admin-btn" onclick="addShowcase()" style="margin-bottom:26px">Add to Showcase</button>
-          <div class="sec-title">Current Showcase</div>
-          <div class="item-list" id="show-list"><div style="color:var(--muted);font-size:.83rem">No images yet.</div></div>
-        </div>
 
         <!-- PRICING TAB -->
         <div class="ap-section" id="tab-pricing">
@@ -737,7 +719,7 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
   </div><!-- /admin-panel -->
 </div><!-- /admin-overlay -->
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ── CLOCK ──
 function updateClock(){
   const now=new Date(),off=now.getTimezoneOffset()*60000,
@@ -956,6 +938,9 @@ function refreshAdminLists(){
         <div class="item-row-title">${pd[k].title}</div>
         <div class="item-row-sub">${typeLabel[pd[k].type]||pd[k].type}${pd[k].featured?' · ⭐ Featured':''}</div>
       </div>
+      <a class="admin-btn sm" href="${pd[k].url}" download target="_blank" title="Download" style="display:inline-flex;align-items:center;gap:4px">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </a>
       <button class="admin-btn sm danger" onclick="deleteItem('projects/${k}')">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
       </button>
@@ -975,32 +960,17 @@ function refreshAdminLists(){
       </button>
     </div>`).join('') : '<div style="color:var(--muted);font-size:.83rem">No reviews yet.</div>';
 
-  // Showcase
-  const sd=window._showcase||{}, sl=document.getElementById('show-list'), sk=Object.keys(sd);
-  sl.innerHTML=sk.length ? sk.sort((a,b)=>(sd[b].ts||0)-(sd[a].ts||0)).map(k=>`
-    <div class="item-row">
-      <img src="${sd[k].url}" alt=""/>
-      <div class="item-row-info"><div class="item-row-title">Showcase Image</div></div>
-      <button class="admin-btn sm danger" onclick="deleteItem('showcase/${k}')">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-      </button>
-    </div>`).join('') : '<div style="color:var(--muted);font-size:.83rem">No images yet.</div>';
 }
 window._refreshAdmin = refreshAdminLists;
 
-// ── WORK FILTER ──
+// ── WORK FILTER — single button, no filtering needed ──
 let _activeFilter = 'all';
-function filterWork(cat){
-  _activeFilter = cat;
-  document.querySelectorAll('.work-filter-btn').forEach(b=>{
-    b.classList.toggle('active', b.textContent.trim().toLowerCase().replace(' / ','-')===cat||
-      (cat==='all'&&b.textContent.trim()==='All'));
-  });
-  document.querySelectorAll('.work-card').forEach(card=>{
-    const t=card.dataset.type||'';
-    card.classList.toggle('hidden', cat!=='all' && t!==cat);
-  });
-}
+function filterWork(cat){ _activeFilter=cat; }
+// Bind the single realistic button after DOM ready
+document.addEventListener('DOMContentLoaded', function(){
+  const btn = document.getElementById('btn-realistic');
+  if(btn) btn.classList.add('active');
+});
 
 // ── RENDER PROJECTS (Past Work grid) ──
 window.renderProjects = function(data){
@@ -1012,16 +982,17 @@ window.renderProjects = function(data){
   }
   const typeLabel={realistic:'Realistic',cartoony:'Cartoony','before-after':'Before/After'};
   const pillClass={realistic:'pill-realistic',cartoony:'pill-cartoony','before-after':'pill-before-after'};
-  grid.innerHTML=keys.map((k,i)=>{
+  grid.innerHTML=keys.map((k)=>{
     const p=data[k];
-    const isFeat=p.featured && i===0;
-    return `<div class="work-card${isFeat?' work-featured':''} fade-in" data-type="${p.type||'realistic'}">
+    return `<div class="work-card fade-in" data-type="${p.type||'realistic'}">
       <img src="${p.url}" alt="${p.title}" loading="lazy"/>
       <div class="work-card-overlay"></div>
       <div class="work-card-info">
-        <div class="work-card-pill ${pillClass[p.type]||'pill-realistic'}">${typeLabel[p.type]||p.type}</div>
         <div class="work-card-title">${p.title}</div>
       </div>
+      <a class="work-dl-btn" href="${p.url}" download="${p.title.replace(/\s+/g,'_')}.png" target="_blank" title="Download">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </a>
     </div>`;
   }).join('');
   filterWork(_activeFilter);
@@ -1043,18 +1014,6 @@ window.renderReviews = function(data){
       </div>
     </div>`).join('')
   : '<div class="reviews-empty">No reviews yet — add them from the admin panel.</div>';
-  observeFade();
-};
-
-// ── RENDER SHOWCASE ──
-window.renderShowcase = function(data){
-  const keys=Object.keys(data).sort((a,b)=>(data[b].ts||0)-(data[a].ts||0));
-  const grid=document.getElementById('showcase-grid');
-  grid.innerHTML=keys.length ? keys.map(k=>`
-    <div class="showcase-item fade-in">
-      <img src="${data[k].url}" alt="Showcase" loading="lazy"/>
-    </div>`).join('')
-  : '<div class="showcase-empty">No showcase images yet.</div>';
   observeFade();
 };
 
@@ -1167,14 +1126,12 @@ function observeFade(){
 }
 observeFade();
 
+// ── ADMIN TOGGLE BIND ──
+document.getElementById('admin-toggle').addEventListener('click', openAdmin);
+
 // ── RIPPLE ──
 document.addEventListener('click',function(e){
   const btn=e.target.closest('.btn-primary,.btn-ghost,.order-btn,.price-btn-primary,.price-btn-ghost');
   if(!btn) return;
   const rect=btn.getBoundingClientRect(),r=document.createElement('span'),s=Math.max(rect.width,rect.height);
-  r.style.cssText=`position:absolute;border-radius:50%;background:rgba(255,255,255,.2);width:${s}px;height:${s}px;left:${e.clientX-rect.left-s/2}px;top:${e.clientY-rect.top-s/2}px;transform:scale(0);animation:ripple .5s ease-out;pointer-events:none;z-index:1`;
-  btn.style.position='relative';btn.style.overflow='hidden';btn.appendChild(r);setTimeout(()=>r.remove(),500);
-});
-</script>
-</body>
-</html>
+  r.style.cssText=`position:absolute;border-radius:50%;background:rgba(255,255,255,.2);width:${s}px;height:${s}px;left:${e.clientX-rect.left-s/2}px;top:${e.clien
