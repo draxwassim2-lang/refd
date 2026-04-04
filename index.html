@@ -584,7 +584,7 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
               <label>Work Type</label>
               <select id="proj-featured">
                 <option value="no">Regular Work</option>
-                <option value="yes">Best Work ⭐</option>
+                <option value="yes">Newest Work ⭐</option>
               </select>
             </div>
           </div>
@@ -920,7 +920,7 @@ function refreshAdminLists(){
       <img src="${pd[k].url}" alt=""/>
       <div class="item-row-info">
         <div class="item-row-title">${pd[k].title}</div>
-        <div class="item-row-sub">${typeLabel[pd[k].type]||pd[k].type}${pd[k].featured?' · ⭐ Featured':''}</div>
+        <div class="item-row-sub">${typeLabel[pd[k].type]||pd[k].type}${pd[k].featured?' · ⭐ Newest Work':''}</div>
       </div>
       <a class="admin-btn sm" href="${pd[k].url}" download target="_blank" title="Download" style="display:inline-flex;align-items:center;gap:4px">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -972,7 +972,7 @@ window.renderProjects = function(data){
     return `<div class="work-card${isFeat?' featured':''} fade-in" data-type="${p.type||'realistic'}">
       <img src="${p.url}" alt="${p.title}" loading="lazy"/>
       <div class="work-card-overlay"></div>
-      ${isFeat?'<div class="work-featured-badge">⭐ Best Work</div>':''}
+      ${isFeat?'<div class="work-featured-badge">⭐ Newest Work</div>':''}
       <div class="work-card-info">
         <div class="work-card-title">${p.title}</div>
       </div>
