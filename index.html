@@ -500,7 +500,7 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
         <div class="contact-name">X (Twitter)</div>
         <div class="contact-handle">@HoppiGFX</div>
       </a>
-      <a href="#" class="contact-card fade-in" data-link="discord" style="pointer-events:none">
+      <a href="#" class="contact-card fade-in" data-link="discord">
         <div class="contact-icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg></div>
         <div class="contact-name">Discord</div>
         <div class="contact-handle">Coming Soon</div>
@@ -592,15 +592,9 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
             </div>
           </div>
           <div class="admin-field">
-            <label>Image</label>
-            <label class="file-label">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              <span id="proj-fn">Click to select image…</span>
-              <input type="file" id="proj-file" accept="image/*" onchange="previewFile('proj-file','proj-prev','proj-fn')"/>
-            </label>
+            <label>Image URL</label>
+            <input type="url" id="proj-url" placeholder="https://i.imgur.com/xxxx.jpg" oninput="previewUrl('proj-url','proj-prev')"/>
             <img id="proj-prev" class="upload-preview"/>
-            <div class="upload-progress" id="proj-prog"><div class="upload-progress-bar" id="proj-prog-bar"></div></div>
-            <div class="upload-status" id="proj-st"></div>
           </div>
           <button class="admin-btn" onclick="addProject()" style="margin-bottom:26px">Add Project</button>
           <div class="sec-title">Current Projects</div>
@@ -628,15 +622,9 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
             </select>
           </div>
           <div class="admin-field">
-            <label>Avatar Image (optional)</label>
-            <label class="file-label">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              <span id="rev-fn">Click to select image…</span>
-              <input type="file" id="rev-file" accept="image/*" onchange="previewFile('rev-file','rev-prev','rev-fn')"/>
-            </label>
+            <label>Avatar URL (optional)</label>
+            <input type="url" id="rev-url" placeholder="https://i.imgur.com/xxxx.jpg" oninput="previewUrl('rev-url','rev-prev')"/>
             <img id="rev-prev" class="upload-preview"/>
-            <div class="upload-progress" id="rev-prog"><div class="upload-progress-bar" id="rev-prog-bar"></div></div>
-            <div class="upload-status" id="rev-st"></div>
           </div>
           <button class="admin-btn" onclick="addReview()" style="margin-bottom:26px">Add Review</button>
           <div class="sec-title">Current Reviews</div>
@@ -751,7 +739,7 @@ function doLogin(){
   }
 }
 function switchTab(n){
-  const tabs=['projects','reviews','showcase','pricing','links'];
+  const tabs=['projects','reviews','pricing','links'];
   document.querySelectorAll('.ap-tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===n));
   document.querySelectorAll('.ap-section').forEach(s=>s.classList.remove('active'));
   document.getElementById('tab-'+n).classList.add('active');
@@ -770,6 +758,12 @@ function previewFile(iid,pid,nid){
     img.style.display='block';
   };
   r.readAsDataURL(f);
+}
+function previewUrl(inputId, imgId){
+  const url=document.getElementById(inputId).value.trim();
+  const img=document.getElementById(imgId);
+  if(url){img.src=url;img.style.display='block';}
+  else{img.style.display='none';}
 }
 
 // ── UPLOAD (with progress bar) ──
@@ -845,9 +839,10 @@ function showMsg(id,text,type='ok'){
 // ── ADD PROJECT ──
 async function addProject(){
   const title=document.getElementById('proj-title').value.trim();
+  const url=document.getElementById('proj-url').value.trim();
   if(!title){showMsg('proj-msg','Enter a title.','err');return}
-  const url=await uploadImage('proj-file','proj-st','proj-prog','proj-prog-bar','projects');
-  if(!url){showMsg('proj-msg','Image upload failed — see error above.','err');return}
+  if(!url){showMsg('proj-msg','Enter an image URL.','err');return}
+  if(!window._fb){showMsg('proj-msg','Firebase not ready, wait a moment.','err');return}
   const{db,ref,push}=window._fb;
   await push(ref(db,'projects'),{
     title,
@@ -856,10 +851,8 @@ async function addProject(){
     url, ts: Date.now()
   });
   document.getElementById('proj-title').value='';
-  document.getElementById('proj-file').value='';
+  document.getElementById('proj-url').value='';
   document.getElementById('proj-prev').style.display='none';
-  document.getElementById('proj-fn').textContent='Click to select image…';
-  document.getElementById('proj-st').textContent='';
   showMsg('proj-msg','Project added!','ok');
 }
 
@@ -868,12 +861,8 @@ async function addReview(){
   const name=document.getElementById('rev-name').value.trim();
   const text=document.getElementById('rev-text').value.trim();
   if(!name||!text){showMsg('rev-msg','Fill in name and review.','err');return}
-  // Avatar is optional — don't block if no file
-  let avatarUrl='';
-  const revFile=document.getElementById('rev-file').files[0];
-  if(revFile){
-    avatarUrl=await uploadImage('rev-file','rev-st','rev-prog','rev-prog-bar','reviews')||'';
-  }
+  const avatarUrl=document.getElementById('rev-url').value.trim()||'';
+  if(!window._fb){showMsg('rev-msg','Firebase not ready, wait a moment.','err');return}
   const{db,ref,push}=window._fb;
   await push(ref(db,'reviews'),{
     name, text,
@@ -882,10 +871,8 @@ async function addReview(){
   });
   document.getElementById('rev-name').value='';
   document.getElementById('rev-text').value='';
-  document.getElementById('rev-file').value='';
+  document.getElementById('rev-url').value='';
   document.getElementById('rev-prev').style.display='none';
-  document.getElementById('rev-fn').textContent='Click to select image…';
-  document.getElementById('rev-st').textContent='';
   showMsg('rev-msg','Review added!','ok');
 }
 
@@ -1127,11 +1114,25 @@ function observeFade(){
 observeFade();
 
 // ── ADMIN TOGGLE BIND ──
-document.getElementById('admin-toggle').addEventListener('click', openAdmin);
+document.addEventListener('DOMContentLoaded', function(){
+  const toggle = document.getElementById('admin-toggle');
+  if(toggle) toggle.addEventListener('click', openAdmin);
+});
+// Also bind immediately in case DOM is already ready
+(function(){
+  const toggle = document.getElementById('admin-toggle');
+  if(toggle) toggle.addEventListener('click', openAdmin);
+})();
 
 // ── RIPPLE ──
 document.addEventListener('click',function(e){
   const btn=e.target.closest('.btn-primary,.btn-ghost,.order-btn,.price-btn-primary,.price-btn-ghost');
   if(!btn) return;
   const rect=btn.getBoundingClientRect(),r=document.createElement('span'),s=Math.max(rect.width,rect.height);
-  r.style.cssText=`position:absolute;border-radius:50%;background:rgba(255,255,255,.2);width:${s}px;height:${s}px;left:${e.clientX-rect.left-s/2}px;top:${e.clien
+  r.style.cssText=`position:absolute;border-radius:50%;background:rgba(255,255,255,.2);width:${s}px;height:${s}px;left:${e.clientX-rect.left-s/2}px;top:${e.clientY-rect.top-s/2}px;pointer-events:none;animation:ripple .5s linear`;
+  btn.style.position='relative'; btn.style.overflow='hidden';
+  btn.appendChild(r); setTimeout(()=>r.remove(),500);
+});
+</script>
+</body>
+</html>
