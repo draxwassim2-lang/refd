@@ -151,10 +151,6 @@ section{padding:100px 0}
 
 /* ── PAST WORK (portfolio) ── */
 #work{padding:100px 0;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(58,142,240,.05) 0%,transparent 70%),var(--bg)}
-.work-filter-bar{display:flex;justify-content:center;gap:8px;margin-bottom:48px;flex-wrap:wrap}
-.work-filter-btn{padding:9px 24px;border-radius:99px;border:1px solid var(--border);background:none;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:600;letter-spacing:.06em;cursor:pointer;transition:all .25s}
-.work-filter-btn:hover{border-color:var(--bh);color:var(--white)}
-.work-filter-btn.active{background:var(--ac2);border-color:var(--ac2);color:#fff;box-shadow:0 0 20px rgba(58,142,240,.35)}
 .work-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .work-card{border-radius:12px;overflow:hidden;position:relative;cursor:pointer;background:#040d18;border:1px solid var(--border);transition:transform .3s,border-color .3s,box-shadow .3s;aspect-ratio:16/9}
 .work-card:hover{transform:translateY(-4px) scale(1.01);border-color:var(--bh);box-shadow:0 12px 40px rgba(0,0,0,.5)}
@@ -171,6 +167,11 @@ section{padding:100px 0}
 .work-card-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:#fff;letter-spacing:.04em;line-height:1.1}
 .work-empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:60px 20px;border:1px dashed var(--border);border-radius:var(--r);font-size:.95rem}
 .work-card.hidden{display:none}
+/* Featured work card */
+.work-card.featured{grid-column:span 1;border-color:rgba(58,142,240,.5);box-shadow:0 0 30px rgba(58,142,240,.18),0 0 0 1px rgba(58,142,240,.3);}
+.work-card.featured:hover{border-color:var(--ac);box-shadow:0 0 50px rgba(58,142,240,.3),0 0 0 1px var(--ac);}
+.work-featured-badge{position:absolute;top:10px;left:10px;z-index:4;background:linear-gradient(90deg,var(--ac2),var(--ac));color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:800;letter-spacing:.1em;padding:4px 10px;border-radius:99px;text-transform:uppercase;box-shadow:0 2px 12px rgba(58,142,240,.4)}
+.work-card.featured .work-card-overlay{background:linear-gradient(to top,rgba(5,16,29,.9) 0%,rgba(58,142,240,.05) 100%)}
 .work-dl-btn{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:9px;background:rgba(5,16,29,.75);backdrop-filter:blur(8px);border:1px solid rgba(126,184,247,.25);color:var(--ac);display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(-4px);transition:opacity .25s,transform .25s,background .2s;z-index:3}
 .work-card:hover .work-dl-btn{opacity:1;transform:translateY(0)}
 .work-dl-btn:hover{background:var(--ac2);border-color:var(--ac2);color:#fff}
@@ -456,9 +457,6 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
   <div class="container">
     <p class="section-tag">Portfolio</p>
     <h2 class="section-title">Past <span>Work</span></h2>
-    <div class="work-filter-bar">
-      <button class="work-filter-btn active" id="btn-realistic">Realistic</button>
-    </div>
     <div class="work-grid" id="work-grid">
       <div class="work-empty">No projects yet — add them from the admin panel.</div>
     </div>
@@ -580,7 +578,6 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
               <select id="proj-type">
                 <option value="realistic">Realistic</option>
                 <option value="cartoony">Cartoony</option>
-                <option value="before-after">Before / After</option>
               </select>
             </div>
             <div class="admin-field">
@@ -971,15 +968,14 @@ window.renderProjects = function(data){
   const pillClass={realistic:'pill-realistic',cartoony:'pill-cartoony','before-after':'pill-before-after'};
   grid.innerHTML=keys.map((k)=>{
     const p=data[k];
-    return `<div class="work-card fade-in" data-type="${p.type||'realistic'}">
+    const isFeat=p.featured===true||p.featured==='yes';
+    return `<div class="work-card${isFeat?' featured':''} fade-in" data-type="${p.type||'realistic'}">
       <img src="${p.url}" alt="${p.title}" loading="lazy"/>
       <div class="work-card-overlay"></div>
+      ${isFeat?'<div class="work-featured-badge">⭐ Best Work</div>':''}
       <div class="work-card-info">
         <div class="work-card-title">${p.title}</div>
       </div>
-      <button class="work-dl-btn" onclick="downloadImg('${p.url}','${p.title.replace(/'/g,'')}.png')" title="Download">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-      </button>
     </div>`;
   }).join('');
   filterWork(_activeFilter);
