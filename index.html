@@ -158,7 +158,7 @@ section{padding:100px 0}
 .work-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .work-card{border-radius:12px;overflow:hidden;position:relative;cursor:pointer;background:#040d18;border:1px solid var(--border);transition:transform .3s,border-color .3s,box-shadow .3s;aspect-ratio:16/9}
 .work-card:hover{transform:translateY(-4px) scale(1.01);border-color:var(--bh);box-shadow:0 12px 40px rgba(0,0,0,.5)}
-.work-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+.work-card img{width:100%;height:100%;object-fit:contain;display:block;transition:transform .5s;background:#040d18}
 .work-card:hover img{transform:scale(1.04)}
 .work-card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(5,16,29,.85) 0%,transparent 50%);opacity:0;transition:opacity .3s}
 .work-card:hover .work-card-overlay{opacity:1}
@@ -977,9 +977,9 @@ window.renderProjects = function(data){
       <div class="work-card-info">
         <div class="work-card-title">${p.title}</div>
       </div>
-      <a class="work-dl-btn" href="${p.url}" download="${p.title.replace(/\s+/g,'_')}.png" target="_blank" title="Download">
+      <button class="work-dl-btn" onclick="downloadImg('${p.url}','${p.title.replace(/'/g,'')}.png')" title="Download">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-      </a>
+      </button>
     </div>`;
   }).join('');
   filterWork(_activeFilter);
@@ -1103,6 +1103,23 @@ window.renderPricing = function(data){
     </div>`).join('');
   observeFade();
 };
+
+
+// ── DOWNLOAD IMAGE (works with any URL) ──
+async function downloadImg(url, filename){
+  try{
+    const res = await fetch(url);
+    const blob = await res.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename || 'image.png';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  } catch(e){
+    // fallback: open in new tab
+    window.open(url, '_blank');
+  }
+}
 
 // ── FADE OBSERVER ──
 const io=new IntersectionObserver(entries=>entries.forEach(e=>{
