@@ -237,19 +237,69 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
 #admin-toggle:hover{border-color:var(--ac);color:var(--ac)}
 
 /* ── ADMIN OVERLAY ── */
-#admin-overlay{display:none;position:fixed;inset:0;z-index:700;background:rgba(5,16,29,.82);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:16px}
+#admin-overlay{display:none;position:fixed;inset:0;z-index:700;background:rgba(5,16,29,.85);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:20px}
 #admin-overlay.open{display:flex}
-.admin-panel{background:var(--s1);border:1px solid var(--border);border-radius:24px;width:100%;max-width:580px;max-height:92vh;overflow-y:auto;box-shadow:0 30px 90px rgba(0,0,0,.7);scrollbar-width:thin}
+
+/* Login modal (small centered) */
+.admin-login-wrap{background:var(--s1);border:1px solid var(--border);border-radius:24px;width:100%;max-width:400px;box-shadow:0 30px 90px rgba(0,0,0,.7)}
+
+/* Fullscreen dashboard */
+#admin-overlay.fullscreen{padding:0;background:var(--bg)}
+#admin-overlay.fullscreen .admin-login-wrap{display:none}
+.admin-fs{display:none;width:100%;height:100vh;flex-direction:column}
+#admin-overlay.fullscreen .admin-fs{display:flex}
+
+/* Top bar */
+.afs-topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;background:rgba(9,23,38,.95);border-bottom:1px solid var(--border);flex-shrink:0}
+.afs-topbar-logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.06em;color:var(--white)}
+.afs-topbar-logo span{color:var(--ac)}
+.afs-topbar-right{display:flex;align-items:center;gap:12px}
+.afs-close-btn{display:flex;align-items:center;gap:8px;padding:8px 18px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.88rem;letter-spacing:.05em;cursor:pointer;transition:all .2s}
+.afs-close-btn:hover{border-color:var(--ac);color:var(--ac)}
+
+/* Body = sidebar + content */
+.afs-body{display:flex;flex:1;overflow:hidden}
+
+/* Sidebar */
+.afs-sidebar{width:220px;flex-shrink:0;background:rgba(9,23,38,.9);border-right:1px solid var(--border);padding:20px 12px;display:flex;flex-direction:column;gap:4px;overflow-y:auto}
+.afs-nav-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;border:none;background:transparent;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.95rem;letter-spacing:.04em;cursor:pointer;transition:all .2s;width:100%;text-align:left}
+.afs-nav-item svg{flex-shrink:0;opacity:.6;transition:opacity .2s}
+.afs-nav-item:hover{background:rgba(126,184,247,.07);color:var(--white)}
+.afs-nav-item:hover svg{opacity:1}
+.afs-nav-item.active{background:rgba(58,142,240,.15);color:var(--ac);border:1px solid rgba(58,142,240,.2)}
+.afs-nav-item.active svg{opacity:1;color:var(--ac)}
+.afs-nav-divider{height:1px;background:var(--border);margin:8px 4px}
+
+/* Content area */
+.afs-content{flex:1;overflow-y:auto;background:var(--bg);scrollbar-width:thin}
+.afs-panel{display:none;height:100%}
+.afs-panel.active{display:block}
+
+/* Standard panels (projects, reviews, links) */
+.afs-std-panel{max-width:700px;margin:0 auto;padding:32px 28px}
+
+/* ── PRICING SPLIT ── */
+.afs-pricing-wrap{display:flex;height:100%;overflow:hidden}
+.afs-pricing-edit{width:400px;flex-shrink:0;padding:24px 20px;overflow-y:auto;background:var(--s1);border-right:1px solid var(--border);scrollbar-width:thin}
+.afs-pricing-preview{flex:1;overflow-y:auto;padding:40px 32px;background:var(--bg);scrollbar-width:thin}
+.afs-preview-label{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.afs-preview-label::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px #4ade80;animation:pulse 2s infinite}
+.preview-pricing-cat-tabs{display:flex;gap:5px;margin-bottom:28px;background:rgba(126,184,247,.05);border:1px solid var(--border);border-radius:12px;padding:4px}
+.preview-pricing-cat-tab{flex:1;padding:8px 14px;border-radius:9px;border:none;background:transparent;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:.05em;cursor:pointer;transition:all .2s;white-space:nowrap}
+.preview-pricing-cat-tab.active{background:linear-gradient(135deg,var(--ac2),var(--ac));color:#fff}
+.preview-pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:1100px){.preview-pricing-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:800px){.afs-pricing-wrap{flex-direction:column}.afs-pricing-edit{width:100%;border-right:none;border-bottom:1px solid var(--border)}.preview-pricing-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.afs-sidebar{width:60px}.afs-nav-item span{display:none}.afs-nav-item{justify-content:center;padding:11px}.afs-nav-divider{margin:8px 2px}}
+
+/* ap-* classes kept for login modal */
 .ap-header{padding:26px 26px 0;display:flex;align-items:center;justify-content:space-between}
 .ap-header h2{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.06em}
 .ap-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.4rem;line-height:1;transition:color .2s}
 .ap-close:hover{color:var(--white)}
 .ap-body{padding:18px 26px 26px}
-.ap-tabs{display:flex;gap:3px;margin-bottom:22px;background:rgba(126,184,247,.05);border-radius:12px;padding:4px;border:1px solid var(--border);flex-wrap:wrap}
-.ap-tab{flex:1;padding:8px 4px;border-radius:9px;background:none;border:none;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.85rem;letter-spacing:.04em;cursor:pointer;transition:background .2s,color .2s;white-space:nowrap;min-width:60px}
-.ap-tab.active{background:rgba(58,142,240,.18);color:var(--ac)}
-.ap-section{display:none}
-.ap-section.active{display:block}
+
+/* shared form elements */
 .admin-field{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
 .admin-field label{font-size:.74rem;color:var(--muted);font-weight:600;letter-spacing:.07em;text-transform:uppercase}
 .admin-field input,.admin-field select,.admin-field textarea{background:rgba(126,184,247,.05);border:1px solid var(--border);border-radius:10px;padding:10px 15px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .25s;width:100%}
@@ -272,21 +322,14 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
 .item-row-info{flex:1;min-width:0}
 .item-row-title{font-family:'Barlow Condensed',sans-serif;font-size:.88rem;font-weight:700;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .item-row-sub{font-size:.73rem;color:var(--muted)}
-.file-label{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(126,184,247,.04);border:1px dashed var(--bh);border-radius:10px;cursor:pointer;color:var(--muted);font-size:.88rem;transition:border-color .25s,color .25s}
-.file-label:hover{border-color:var(--ac);color:var(--ac)}
-.file-label input{display:none}
 .upload-preview{width:100%;max-height:140px;object-fit:contain;border-radius:10px;margin-top:8px;border:1px solid var(--border);display:none;background:#040d18}
-.upload-status{font-size:.78rem;margin-top:5px;min-height:18px}
-.upload-progress{width:100%;height:4px;background:rgba(126,184,247,.1);border-radius:2px;margin-top:6px;display:none;overflow:hidden}
-.upload-progress-bar{height:100%;background:linear-gradient(90deg,var(--ac2),var(--ac));border-radius:2px;transition:width .2s;width:0%}
 .link-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .link-icon{width:36px;height:36px;border-radius:10px;background:rgba(126,184,247,.08);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--ac);flex-shrink:0}
 .link-row input{flex:1;background:rgba(126,184,247,.05);border:1px solid var(--border);border-radius:10px;padding:9px 14px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:.87rem;outline:none;transition:border-color .25s}
 .link-row input:focus{border-color:var(--ac2)}
 .link-row input::placeholder{color:var(--muted)}
-
 /* Pricing admin */
-.pricing-pkg-tabs{display:flex;gap:4px;margin-bottom:16px}
+.pricing-pkg-tabs{display:flex;gap:4px;margin-bottom:14px}
 .pkg-tab{flex:1;padding:7px 4px;border-radius:8px;background:none;border:1px solid var(--border);color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.84rem;letter-spacing:.04em;cursor:pointer;transition:all .2s}
 .pkg-tab.active{background:rgba(58,142,240,.2);border-color:var(--ac2);color:var(--ac)}
 .pkg-editor{display:none}.pkg-editor.active{display:block}
@@ -300,6 +343,23 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
 .feat-add-row input:focus{border-color:var(--ac2)}
 .feat-add-btn{padding:8px 14px;border-radius:8px;border:1px solid var(--bh);background:rgba(126,184,247,.08);color:var(--ac);font-family:'Barlow Condensed',sans-serif;font-size:.9rem;cursor:pointer;transition:all .2s;white-space:nowrap}
 .feat-add-btn:hover{background:rgba(126,184,247,.15);border-color:var(--ac)}
+.pricing-cat-admin{display:flex;gap:4px;margin-bottom:14px;padding:4px;background:rgba(126,184,247,.04);border:1px solid var(--border);border-radius:10px}
+.pca-tab{flex:1;padding:7px 4px;border-radius:7px;border:none;background:transparent;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.82rem;letter-spacing:.04em;cursor:pointer;transition:all .2s}
+.pca-tab.active{background:rgba(58,142,240,.22);color:var(--ac)}
+.work-filters{display:flex;gap:10px;justify-content:center;margin-bottom:36px;flex-wrap:wrap}
+.work-filter-btn{padding:9px 24px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:.08em;cursor:pointer;transition:all .25s}
+.work-filter-btn:hover{border-color:var(--bh);color:var(--white)}
+.work-filter-btn.active{background:var(--ac2);border-color:var(--ac2);color:#fff;box-shadow:0 0 18px rgba(58,142,240,.35)}
+
+/* ── PRICING CATEGORY TABS ── */
+.pricing-cat-tabs{display:flex;gap:5px;justify-content:center;margin-bottom:44px;background:rgba(126,184,247,.05);border:1px solid var(--border);border-radius:14px;padding:5px;max-width:440px;margin-left:auto;margin-right:auto}
+.pricing-cat-tab{flex:1;padding:10px 18px;border-radius:10px;border:none;background:transparent;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.92rem;font-weight:700;letter-spacing:.06em;cursor:pointer;transition:all .25s;white-space:nowrap}
+.pricing-cat-tab.active{background:linear-gradient(135deg,var(--ac2),var(--ac));color:#fff;box-shadow:0 4px 16px rgba(58,142,240,.3)}
+
+/* ── ADMIN PRICING SUBTABS ── */
+.pricing-cat-admin{display:flex;gap:4px;margin-bottom:16px;padding:4px;background:rgba(126,184,247,.04);border:1px solid var(--border);border-radius:10px}
+.pca-tab{flex:1;padding:7px 4px;border-radius:7px;border:none;background:transparent;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.82rem;letter-spacing:.04em;cursor:pointer;transition:all .2s}
+.pca-tab.active{background:rgba(58,142,240,.22);color:var(--ac)}
 
 /* ── FADE ANIMATION ── */
 .fade-in{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s ease}
@@ -457,6 +517,10 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
   <div class="container">
     <p class="section-tag">Portfolio</p>
     <h2 class="section-title">Latest <span>Work</span></h2>
+    <div class="work-filters">
+      <button class="work-filter-btn active" id="wf-realistic" onclick="filterWork('realistic')">Realistic Thumbnails</button>
+      <button class="work-filter-btn" id="wf-highctr" onclick="filterWork('highctr')">High CTR</button>
+    </div>
     <div class="work-grid" id="work-grid">
       <div class="work-empty">No projects yet — add them from the admin panel.</div>
     </div>
@@ -468,9 +532,12 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
   <div class="container">
     <p class="section-tag">Investment</p>
     <h2 class="section-title"><span>Pricing</span></h2>
-    <div class="pricing-grid" id="pricing-grid">
-      <!-- Rendered dynamically by renderPricing() -->
+    <div class="pricing-cat-tabs">
+      <button class="pricing-cat-tab active" id="pt-realistic" onclick="switchPricingTab('realistic')">Realistic Thumbnails</button>
+      <button class="pricing-cat-tab" id="pt-highctr" onclick="switchPricingTab('highctr')">High CTR Thumbnails</button>
     </div>
+    <div class="pricing-grid" id="pricing-grid-realistic"></div>
+    <div class="pricing-grid" id="pricing-grid-highctr" style="display:none"></div>
   </div>
 </section>
 
@@ -530,178 +597,226 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
 
 <!-- ADMIN PANEL -->
 <div id="admin-overlay" onclick="overlayClick(event)">
-  <div class="admin-panel">
-    <!-- LOGIN -->
-    <div id="ap-login">
-      <div class="ap-header" style="padding-bottom:20px">
-        <h2>Admin Panel</h2>
-        <button class="ap-close" onclick="closeAdmin()">✕</button>
+
+  <!-- LOGIN (small modal) -->
+  <div class="admin-login-wrap" id="ap-login">
+    <div class="ap-header" style="padding-bottom:20px">
+      <h2>Admin Panel</h2>
+      <button class="ap-close" onclick="closeAdmin()">✕</button>
+    </div>
+    <div class="ap-body">
+      <div id="login-err" style="display:none" class="admin-msg err">Incorrect password.</div>
+      <div class="admin-field">
+        <label>Password</label>
+        <input type="password" id="ap-pw" placeholder="Enter password…" onkeydown="if(event.key==='Enter')doLogin()"/>
       </div>
-      <div class="ap-body">
-        <div id="login-err" style="display:none" class="admin-msg err">Incorrect password.</div>
-        <div class="admin-field">
-          <label>Password</label>
-          <input type="password" id="ap-pw" placeholder="Enter password…" onkeydown="if(event.key==='Enter')doLogin()"/>
-        </div>
-        <div style="display:flex;gap:10px;margin-top:4px">
-          <button class="admin-btn" onclick="doLogin()">Login</button>
-          <button class="admin-btn ghost" onclick="closeAdmin()">Cancel</button>
-        </div>
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button class="admin-btn" onclick="doLogin()">Login</button>
+        <button class="admin-btn ghost" onclick="closeAdmin()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FULLSCREEN DASHBOARD -->
+  <div class="admin-fs" id="ap-dash">
+
+    <!-- Top bar -->
+    <div class="afs-topbar">
+      <div class="afs-topbar-logo">Hoppi<span>GFX</span> <span style="color:var(--muted);font-size:1rem;font-family:'DM Sans',sans-serif;font-style:normal;letter-spacing:0;margin-left:8px">Control Panel</span></div>
+      <div class="afs-topbar-right">
+        <button class="afs-close-btn" onclick="closeAdmin()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          Exit Panel
+        </button>
       </div>
     </div>
 
-    <!-- DASHBOARD -->
-    <div id="ap-dash" style="display:none">
-      <div class="ap-header">
-        <h2>Control Panel</h2>
-        <button class="ap-close" onclick="closeAdmin()">✕</button>
-      </div>
-      <div class="ap-body">
-        <div class="ap-tabs">
-          <button class="ap-tab active" onclick="switchTab('projects')">Projects</button>
-          <button class="ap-tab" onclick="switchTab('reviews')">Reviews</button>
-          <button class="ap-tab" onclick="switchTab('pricing')">Pricing</button>
-          <button class="ap-tab" onclick="switchTab('links')">Links</button>
+    <!-- Body -->
+    <div class="afs-body">
+
+      <!-- Sidebar -->
+      <nav class="afs-sidebar">
+        <button class="afs-nav-item active" id="nav-projects" onclick="switchTab('projects')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          <span>Projects</span>
+        </button>
+        <button class="afs-nav-item" id="nav-reviews" onclick="switchTab('reviews')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span>Reviews</span>
+        </button>
+        <button class="afs-nav-item" id="nav-pricing" onclick="switchTab('pricing')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <span>Pricing</span>
+        </button>
+        <div class="afs-nav-divider"></div>
+        <button class="afs-nav-item" id="nav-links" onclick="switchTab('links')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          <span>Links</span>
+        </button>
+      </nav>
+
+      <!-- Content -->
+      <div class="afs-content">
+
+        <!-- PROJECTS PANEL -->
+        <div class="afs-panel active" id="tab-projects">
+          <div class="afs-std-panel">
+            <div class="sec-title">Add Project</div>
+            <div id="proj-msg" style="display:none"></div>
+            <div class="admin-field">
+              <label>Title</label>
+              <input type="text" id="proj-title" placeholder="e.g. Rivals Arena"/>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div class="admin-field">
+                <label>Category</label>
+                <select id="proj-type">
+                  <option value="realistic">Realistic</option>
+                  <option value="highctr">High CTR</option>
+                  <option value="cartoony">Cartoony</option>
+                </select>
+              </div>
+              <div class="admin-field">
+                <label>Work Type</label>
+                <select id="proj-featured">
+                  <option value="no">Regular Work</option>
+                  <option value="yes">Newest Work ⭐</option>
+                </select>
+              </div>
+            </div>
+            <div class="admin-field">
+              <label>Image URL</label>
+              <input type="url" id="proj-url" placeholder="https://i.imgur.com/xxxx.jpg" oninput="previewUrl('proj-url','proj-prev')"/>
+              <img id="proj-prev" class="upload-preview"/>
+            </div>
+            <button class="admin-btn" onclick="addProject()" style="margin-bottom:32px">Add Project</button>
+            <div class="sec-title">Current Projects</div>
+            <div class="item-list" id="proj-list"><div style="color:var(--muted);font-size:.83rem">No projects yet.</div></div>
+          </div>
         </div>
 
-        <!-- PROJECTS TAB -->
-        <div class="ap-section active" id="tab-projects">
-          <div class="sec-title">Add Project</div>
-          <div id="proj-msg" style="display:none"></div>
-          <div class="admin-field">
-            <label>Title</label>
-            <input type="text" id="proj-title" placeholder="e.g. Rivals Arena"/>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <!-- REVIEWS PANEL -->
+        <div class="afs-panel" id="tab-reviews">
+          <div class="afs-std-panel">
+            <div class="sec-title">Add Review</div>
+            <div id="rev-msg" style="display:none"></div>
+            <div class="admin-field"><label>Client Name</label><input type="text" id="rev-name" placeholder="e.g. Happy Client"/></div>
+            <div class="admin-field"><label>Review Text</label><textarea id="rev-text" placeholder="What they said…"></textarea></div>
             <div class="admin-field">
-              <label>Category</label>
-              <select id="proj-type">
-                <option value="realistic">Realistic</option>
-                <option value="cartoony">Cartoony</option>
+              <label>Stars</label>
+              <select id="rev-stars">
+                <option value="5">★★★★★ (5)</option>
+                <option value="4">★★★★ (4)</option>
+                <option value="3">★★★ (3)</option>
               </select>
             </div>
             <div class="admin-field">
-              <label>Work Type</label>
-              <select id="proj-featured">
-                <option value="no">Regular Work</option>
-                <option value="yes">Newest Work ⭐</option>
-              </select>
+              <label>Avatar URL (optional)</label>
+              <input type="url" id="rev-url" placeholder="https://i.imgur.com/xxxx.jpg" oninput="previewUrl('rev-url','rev-prev')"/>
+              <img id="rev-prev" class="upload-preview"/>
             </div>
+            <button class="admin-btn" onclick="addReview()" style="margin-bottom:32px">Add Review</button>
+            <div class="sec-title">Current Reviews</div>
+            <div class="item-list" id="rev-list"><div style="color:var(--muted);font-size:.83rem">No reviews yet.</div></div>
           </div>
-          <div class="admin-field">
-            <label>Image URL</label>
-            <input type="url" id="proj-url" placeholder="https://i.imgur.com/xxxx.jpg" oninput="previewUrl('proj-url','proj-prev')"/>
-            <img id="proj-prev" class="upload-preview"/>
-          </div>
-          <button class="admin-btn" onclick="addProject()" style="margin-bottom:26px">Add Project</button>
-          <div class="sec-title">Current Projects</div>
-          <div class="item-list" id="proj-list"><div style="color:var(--muted);font-size:.83rem">No projects yet.</div></div>
         </div>
 
-        <!-- REVIEWS TAB -->
-        <div class="ap-section" id="tab-reviews">
-          <div class="sec-title">Add Review</div>
-          <div id="rev-msg" style="display:none"></div>
-          <div class="admin-field">
-            <label>Client Name</label>
-            <input type="text" id="rev-name" placeholder="e.g. Happy Client"/>
+        <!-- PRICING PANEL (split view) -->
+        <div class="afs-panel" id="tab-pricing">
+          <div class="afs-pricing-wrap">
+
+            <!-- LEFT: Edit Form -->
+            <div class="afs-pricing-edit">
+              <div class="sec-title" style="margin-bottom:16px">Edit Pricing</div>
+              <div id="pricing-msg" style="display:none"></div>
+              <div class="pricing-cat-admin">
+                <button class="pca-tab active" onclick="switchPricingAdminCat('realistic')">Realistic</button>
+                <button class="pca-tab" onclick="switchPricingAdminCat('highctr')">High CTR</button>
+              </div>
+              <div class="pricing-pkg-tabs">
+                <button class="pkg-tab active" onclick="switchPkg(0)">Pkg 1</button>
+                <button class="pkg-tab" onclick="switchPkg(1)">Pkg 2</button>
+                <button class="pkg-tab" onclick="switchPkg(2)">Pkg 3</button>
+              </div>
+              <!-- Package 0 -->
+              <div class="pkg-editor active" id="pkg-0">
+                <div class="admin-field"><label>Package Name</label><input type="text" id="pkg0-name" oninput="liveUpdatePreview()" placeholder="e.g. Icon"/></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                  <div class="admin-field"><label>Euro Price</label><input type="text" id="pkg0-euro" oninput="liveUpdatePreview()" placeholder="e.g. 10–15€"/></div>
+                  <div class="admin-field"><label>Robux Price</label><input type="text" id="pkg0-robux" oninput="liveUpdatePreview()" placeholder="e.g. 2,500 Robux"/></div>
+                </div>
+                <div class="admin-field"><label>Delivery Time</label><input type="text" id="pkg0-delivery" oninput="liveUpdatePreview()" placeholder="e.g. 1–2 Days"/></div>
+                <div class="admin-field"><label>Most Popular?</label><select id="pkg0-popular" onchange="liveUpdatePreview()"><option value="no">No</option><option value="yes">Yes</option></select></div>
+                <div class="sec-title" style="margin-top:12px">Features</div>
+                <div class="feature-list-admin" id="pkg0-features"></div>
+                <div class="feat-add-row"><input type="text" id="pkg0-feat-input" placeholder="Add feature…" onkeydown="if(event.key==='Enter')addFeature(0)"/><button class="feat-add-btn" onclick="addFeature(0)">+ Add</button></div>
+              </div>
+              <!-- Package 1 -->
+              <div class="pkg-editor" id="pkg-1">
+                <div class="admin-field"><label>Package Name</label><input type="text" id="pkg1-name" oninput="liveUpdatePreview()" placeholder="e.g. Thumbnail"/></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                  <div class="admin-field"><label>Euro Price</label><input type="text" id="pkg1-euro" oninput="liveUpdatePreview()" placeholder="e.g. 15–20€"/></div>
+                  <div class="admin-field"><label>Robux Price</label><input type="text" id="pkg1-robux" oninput="liveUpdatePreview()" placeholder="e.g. 4,500 Robux"/></div>
+                </div>
+                <div class="admin-field"><label>Delivery Time</label><input type="text" id="pkg1-delivery" oninput="liveUpdatePreview()" placeholder="e.g. 1–3 Days"/></div>
+                <div class="admin-field"><label>Most Popular?</label><select id="pkg1-popular" onchange="liveUpdatePreview()"><option value="no">No</option><option value="yes">Yes</option></select></div>
+                <div class="sec-title" style="margin-top:12px">Features</div>
+                <div class="feature-list-admin" id="pkg1-features"></div>
+                <div class="feat-add-row"><input type="text" id="pkg1-feat-input" placeholder="Add feature…" onkeydown="if(event.key==='Enter')addFeature(1)"/><button class="feat-add-btn" onclick="addFeature(1)">+ Add</button></div>
+              </div>
+              <!-- Package 2 -->
+              <div class="pkg-editor" id="pkg-2">
+                <div class="admin-field"><label>Package Name</label><input type="text" id="pkg2-name" oninput="liveUpdatePreview()" placeholder="e.g. Bundle"/></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                  <div class="admin-field"><label>Euro Price</label><input type="text" id="pkg2-euro" oninput="liveUpdatePreview()" placeholder="e.g. 35–40€"/></div>
+                  <div class="admin-field"><label>Robux Price</label><input type="text" id="pkg2-robux" oninput="liveUpdatePreview()" placeholder="e.g. 5,500 Robux"/></div>
+                </div>
+                <div class="admin-field"><label>Delivery Time</label><input type="text" id="pkg2-delivery" oninput="liveUpdatePreview()" placeholder="e.g. 2–4 Days"/></div>
+                <div class="admin-field"><label>Most Popular?</label><select id="pkg2-popular" onchange="liveUpdatePreview()"><option value="no">No</option><option value="yes">Yes</option></select></div>
+                <div class="sec-title" style="margin-top:12px">Features</div>
+                <div class="feature-list-admin" id="pkg2-features"></div>
+                <div class="feat-add-row"><input type="text" id="pkg2-feat-input" placeholder="Add feature…" onkeydown="if(event.key==='Enter')addFeature(2)"/><button class="feat-add-btn" onclick="addFeature(2)">+ Add</button></div>
+              </div>
+              <button class="admin-btn" onclick="savePricing()" style="margin-top:18px;width:100%">💾 Save All Pricing</button>
+            </div>
+
+            <!-- RIGHT: Live Preview -->
+            <div class="afs-pricing-preview">
+              <div class="afs-preview-label">Live Preview</div>
+              <div class="preview-pricing-cat-tabs">
+                <button class="preview-pricing-cat-tab active" id="prev-pt-realistic" onclick="switchPreviewPricingTab('realistic')">Realistic Thumbnails</button>
+                <button class="preview-pricing-cat-tab" id="prev-pt-highctr" onclick="switchPreviewPricingTab('highctr')">High CTR Thumbnails</button>
+              </div>
+              <div class="preview-pricing-grid" id="preview-pricing-grid"></div>
+            </div>
+
           </div>
-          <div class="admin-field">
-            <label>Review Text</label>
-            <textarea id="rev-text" placeholder="What they said…"></textarea>
-          </div>
-          <div class="admin-field">
-            <label>Stars</label>
-            <select id="rev-stars">
-              <option value="5">★★★★★ (5)</option>
-              <option value="4">★★★★ (4)</option>
-              <option value="3">★★★ (3)</option>
-            </select>
-          </div>
-          <div class="admin-field">
-            <label>Avatar URL (optional)</label>
-            <input type="url" id="rev-url" placeholder="https://i.imgur.com/xxxx.jpg" oninput="previewUrl('rev-url','rev-prev')"/>
-            <img id="rev-prev" class="upload-preview"/>
-          </div>
-          <button class="admin-btn" onclick="addReview()" style="margin-bottom:26px">Add Review</button>
-          <div class="sec-title">Current Reviews</div>
-          <div class="item-list" id="rev-list"><div style="color:var(--muted);font-size:.83rem">No reviews yet.</div></div>
         </div>
 
-
-        <!-- PRICING TAB -->
-        <div class="ap-section" id="tab-pricing">
-          <div class="sec-title">Edit Pricing Packages</div>
-          <div id="pricing-msg" style="display:none"></div>
-          <div class="pricing-pkg-tabs">
-            <button class="pkg-tab active" onclick="switchPkg(0)">Standard</button>
-            <button class="pkg-tab" onclick="switchPkg(1)">Priority</button>
-            <button class="pkg-tab" onclick="switchPkg(2)">Bundle</button>
-          </div>
-          <!-- Package 0 -->
-          <div class="pkg-editor active" id="pkg-0">
-            <div class="admin-field"><label>Package Name</label><input type="text" id="pkg0-name" placeholder="e.g. Standard"/></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-              <div class="admin-field"><label>Euro Price</label><input type="text" id="pkg0-euro" placeholder="e.g. 15–20€"/></div>
-              <div class="admin-field"><label>Robux Price</label><input type="text" id="pkg0-robux" placeholder="e.g. 2,500 Robux"/></div>
+        <!-- LINKS PANEL -->
+        <div class="afs-panel" id="tab-links">
+          <div class="afs-std-panel">
+            <div class="sec-title">Contact Links</div>
+            <div id="links-msg" style="display:none"></div>
+            <div class="link-row">
+              <div class="link-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.213 5.567zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div>
+              <input type="url" id="l-twitter" placeholder="https://x.com/yourname"/>
             </div>
-            <div class="admin-field"><label>Delivery Time</label><input type="text" id="pkg0-delivery" placeholder="e.g. 1–3 Days"/></div>
-            <div class="admin-field"><label>Mark as Most Popular?</label><select id="pkg0-popular"><option value="no">No</option><option value="yes">Yes</option></select></div>
-            <div class="sec-title" style="margin-top:16px">Features</div>
-            <div class="feature-list-admin" id="pkg0-features"></div>
-            <div class="feat-add-row"><input type="text" id="pkg0-feat-input" placeholder="Add feature…" onkeydown="if(event.key==='Enter')addFeature(0)"/><button class="feat-add-btn" onclick="addFeature(0)">+ Add</button></div>
-          </div>
-          <!-- Package 1 -->
-          <div class="pkg-editor" id="pkg-1">
-            <div class="admin-field"><label>Package Name</label><input type="text" id="pkg1-name" placeholder="e.g. Priority"/></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-              <div class="admin-field"><label>Euro Price</label><input type="text" id="pkg1-euro" placeholder="e.g. 25–30€"/></div>
-              <div class="admin-field"><label>Robux Price</label><input type="text" id="pkg1-robux" placeholder="e.g. 3,000 Robux"/></div>
+            <div class="link-row">
+              <div class="link-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg></div>
+              <input type="url" id="l-discord" placeholder="https://discord.gg/server"/>
             </div>
-            <div class="admin-field"><label>Delivery Time</label><input type="text" id="pkg1-delivery" placeholder="e.g. Express"/></div>
-            <div class="admin-field"><label>Mark as Most Popular?</label><select id="pkg1-popular"><option value="no">No</option><option value="yes">Yes</option></select></div>
-            <div class="sec-title" style="margin-top:16px">Features</div>
-            <div class="feature-list-admin" id="pkg1-features"></div>
-            <div class="feat-add-row"><input type="text" id="pkg1-feat-input" placeholder="Add feature…" onkeydown="if(event.key==='Enter')addFeature(1)"/><button class="feat-add-btn" onclick="addFeature(1)">+ Add</button></div>
-          </div>
-          <!-- Package 2 -->
-          <div class="pkg-editor" id="pkg-2">
-            <div class="admin-field"><label>Package Name</label><input type="text" id="pkg2-name" placeholder="e.g. Premium Bundle"/></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-              <div class="admin-field"><label>Euro Price</label><input type="text" id="pkg2-euro" placeholder="e.g. 50€"/></div>
-              <div class="admin-field"><label>Robux Price</label><input type="text" id="pkg2-robux" placeholder="e.g. 5,000 Robux"/></div>
+            <div class="link-row">
+              <div class="link-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
+              <input type="email" id="l-email" placeholder="your@email.com"/>
             </div>
-            <div class="admin-field"><label>Delivery Time</label><input type="text" id="pkg2-delivery" placeholder="e.g. 1–2 Days"/></div>
-            <div class="admin-field"><label>Mark as Most Popular?</label><select id="pkg2-popular"><option value="no">No</option><option value="yes">Yes</option></select></div>
-            <div class="sec-title" style="margin-top:16px">Features</div>
-            <div class="feature-list-admin" id="pkg2-features"></div>
-            <div class="feat-add-row"><input type="text" id="pkg2-feat-input" placeholder="Add feature…" onkeydown="if(event.key==='Enter')addFeature(2)"/><button class="feat-add-btn" onclick="addFeature(2)">+ Add</button></div>
+            <button class="admin-btn" style="margin-top:12px" onclick="saveLinks()">Save Links</button>
           </div>
-          <button class="admin-btn" onclick="savePricing()" style="margin-top:18px;width:100%">💾 Save All Pricing</button>
         </div>
 
-        <!-- LINKS TAB -->
-        <div class="ap-section" id="tab-links">
-          <div class="sec-title">Contact Links</div>
-          <div id="links-msg" style="display:none"></div>
-          <div class="link-row">
-            <div class="link-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.213 5.567zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div>
-            <input type="url" id="l-twitter" placeholder="https://x.com/yourname"/>
-          </div>
-          <div class="link-row">
-            <div class="link-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg></div>
-            <input type="url" id="l-discord" placeholder="https://discord.gg/server"/>
-          </div>
-          <div class="link-row">
-            <div class="link-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
-            <input type="email" id="l-email" placeholder="your@email.com"/>
-          </div>
-          <button class="admin-btn" style="margin-top:12px" onclick="saveLinks()">Save Links</button>
-        </div>
-
-      </div><!-- /ap-body -->
-    </div><!-- /ap-dash -->
-  </div><!-- /admin-panel -->
+      </div><!-- /afs-content -->
+    </div><!-- /afs-body -->
+  </div><!-- /admin-fs -->
 </div><!-- /admin-overlay -->
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
@@ -722,14 +837,27 @@ window.addEventListener('scroll',()=>{document.querySelector('nav').style.paddin
 
 // ── ADMIN AUTH ──
 const PASS='elPaul-1235ve';
-function openAdmin(){document.getElementById('admin-overlay').classList.add('open')}
-function closeAdmin(){document.getElementById('admin-overlay').classList.remove('open')}
-function overlayClick(e){if(e.target===document.getElementById('admin-overlay'))closeAdmin()}
+let _previewPricingCat = 'realistic';
+
+function openAdmin(){ document.getElementById('admin-overlay').classList.add('open'); }
+function closeAdmin(){
+  document.getElementById('admin-overlay').classList.remove('open','fullscreen');
+  document.getElementById('ap-login').style.display='';
+  document.getElementById('ap-dash').style.display='none';
+  document.getElementById('ap-pw').value='';
+  document.getElementById('login-err').style.display='none';
+}
+function overlayClick(e){
+  // only close if clicking the dark backdrop (not in fullscreen mode)
+  if(e.target===document.getElementById('admin-overlay') && !document.getElementById('admin-overlay').classList.contains('fullscreen')) closeAdmin();
+}
 function doLogin(){
   if(document.getElementById('ap-pw').value===PASS){
     document.getElementById('ap-login').style.display='none';
-    document.getElementById('ap-dash').style.display='block';
+    document.getElementById('ap-dash').style.display='flex';
+    document.getElementById('admin-overlay').classList.add('fullscreen');
     prefillLinks(); refreshAdminLists();
+    switchTab('projects');
   } else {
     document.getElementById('login-err').style.display='block';
     document.getElementById('ap-pw').value='';
@@ -737,10 +865,11 @@ function doLogin(){
 }
 function switchTab(n){
   const tabs=['projects','reviews','pricing','links'];
-  document.querySelectorAll('.ap-tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===n));
-  document.querySelectorAll('.ap-section').forEach(s=>s.classList.remove('active'));
-  document.getElementById('tab-'+n).classList.add('active');
-  if(n==='pricing') prefillPricing();
+  tabs.forEach(t=>{
+    document.getElementById('nav-'+t)?.classList.toggle('active', t===n);
+    document.getElementById('tab-'+t)?.classList.toggle('active', t===n);
+  });
+  if(n==='pricing'){ prefillPricing(); liveUpdatePreview(); }
 }
 
 // ── FILE PREVIEW ──
@@ -914,7 +1043,7 @@ function prefillLinks(){
 function refreshAdminLists(){
   // Projects
   const pd=window._projects||{}, pl=document.getElementById('proj-list'), pk=Object.keys(pd);
-  const typeLabel={realistic:'Realistic',cartoony:'Cartoony','before-after':'Before/After'};
+  const typeLabel={realistic:'Realistic',highctr:'High CTR',cartoony:'Cartoony','before-after':'Before/After'};
   pl.innerHTML=pk.length ? pk.sort((a,b)=>(pd[b].ts||0)-(pd[a].ts||0)).map(k=>`
     <div class="item-row">
       <img src="${pd[k].url}" alt=""/>
@@ -947,16 +1076,267 @@ function refreshAdminLists(){
 }
 window._refreshAdmin = refreshAdminLists;
 
-// ── WORK FILTER — single button, no filtering needed ──
-let _activeFilter = 'all';
-function filterWork(cat){ _activeFilter=cat; }
-// Bind the single realistic button after DOM ready
-document.addEventListener('DOMContentLoaded', function(){
-  const btn = document.getElementById('btn-realistic');
+// ── WORK FILTER ──
+let _activeFilter = 'realistic';
+function filterWork(cat){
+  _activeFilter = cat;
+  document.querySelectorAll('.work-filter-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('wf-' + cat);
   if(btn) btn.classList.add('active');
+  document.querySelectorAll('#work-grid .work-card').forEach(card => {
+    const t = card.dataset.type || 'realistic';
+    card.style.display = (t === cat) ? '' : 'none';
+  });
+  // show empty state if nothing visible
+  const grid = document.getElementById('work-grid');
+  const visible = grid.querySelectorAll('.work-card[style=""], .work-card:not([style])');
+  let anyVisible = false;
+  grid.querySelectorAll('.work-card').forEach(c => { if(c.style.display !== 'none') anyVisible = true; });
+  let empty = grid.querySelector('.work-empty-filter');
+  if(!anyVisible){
+    if(!empty){ empty = document.createElement('div'); empty.className='work-empty work-empty-filter'; empty.textContent='No '+cat+' projects yet.'; grid.appendChild(empty); }
+  } else {
+    if(empty) empty.remove();
+  }
+}
+// Bind filter buttons after DOM ready
+document.addEventListener('DOMContentLoaded', function(){
+  filterWork('realistic');
 });
 
-// ── RENDER PROJECTS (Past Work grid) ──
+// ── PRICING TAB SWITCH ──
+function switchPricingTab(cat){
+  document.getElementById('pricing-grid-realistic').style.display = cat==='realistic' ? '' : 'none';
+  document.getElementById('pricing-grid-highctr').style.display   = cat==='highctr'   ? '' : 'none';
+  document.getElementById('pt-realistic').classList.toggle('active', cat==='realistic');
+  document.getElementById('pt-highctr').classList.toggle('active',   cat==='highctr');
+}
+
+// ── PRICING DEFAULTS ──
+const PRICING_DEFAULTS = {
+  realistic: [
+    {name:'Standard',      euro:'15–20€', robux:'2,500 Robux', delivery:'1–3 Days', popular:false,
+     features:['1 Thumbnail','High Quality Render','2 Revisions','Source File Included']},
+    {name:'Priority',      euro:'25–30€', robux:'3,000 Robux', delivery:'Express',   popular:true,
+     features:['1 Thumbnail','Premium Quality','Unlimited Revisions','Source File Included','Priority Queue']},
+    {name:'Premium Bundle',euro:'50€',    robux:'5,000 Robux', delivery:'1–2 Days',  popular:false,
+     features:['2 Thumbnails','Premium Quality','Unlimited Revisions','Source Files','Priority Queue','Matching Style']}
+  ],
+  highctr: [
+    {name:'Icon',      euro:'10–15€', robux:'2,500 Robux', delivery:'1–2 Days', popular:false,
+     features:['Icon','High Quality Render','Premium Quality']},
+    {name:'Thumbnail', euro:'15–20€', robux:'4,500 Robux', delivery:'1–3 Days', popular:true,
+     features:['1 Thumbnail','Premium Quality']},
+    {name:'Bundle',    euro:'35–40€', robux:'5,500 Robux', delivery:'2–4 Days', popular:false,
+     features:['1 Thumbnail + 1 Icon','Premium Quality','Priority Queue']}
+  ]
+};
+
+let _pricingEditCat = 'realistic';
+let _pkgFeatures = {
+  realistic: [
+    [...PRICING_DEFAULTS.realistic[0].features],
+    [...PRICING_DEFAULTS.realistic[1].features],
+    [...PRICING_DEFAULTS.realistic[2].features]
+  ],
+  highctr: [
+    [...PRICING_DEFAULTS.highctr[0].features],
+    [...PRICING_DEFAULTS.highctr[1].features],
+    [...PRICING_DEFAULTS.highctr[2].features]
+  ]
+};
+// In-memory store for unsaved edits when switching admin category
+let _pricingMemory = { realistic: null, highctr: null };
+
+function switchPkg(i){
+  document.querySelectorAll('.pkg-tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+  document.querySelectorAll('.pkg-editor').forEach((e,j)=>e.classList.toggle('active',j===i));
+}
+
+function renderFeatureListAdmin(pkgIdx){
+  const fl=document.getElementById('pkg'+pkgIdx+'-features');
+  fl.innerHTML=_pkgFeatures[_pricingEditCat][pkgIdx].map((f,fi)=>`
+    <div class="feature-item-admin">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      <span>${f}</span>
+      <button class="feat-del" onclick="removeFeature(${pkgIdx},${fi})">✕</button>
+    </div>`).join('');
+}
+function addFeature(pkgIdx){
+  const inp=document.getElementById('pkg'+pkgIdx+'-feat-input');
+  const val=inp.value.trim();
+  if(!val) return;
+  _pkgFeatures[_pricingEditCat][pkgIdx].push(val); inp.value='';
+  renderFeatureListAdmin(pkgIdx);
+  liveUpdatePreview();
+}
+function removeFeature(pkgIdx,featIdx){
+  _pkgFeatures[_pricingEditCat][pkgIdx].splice(featIdx,1);
+  renderFeatureListAdmin(pkgIdx);
+  liveUpdatePreview();
+}
+
+function _saveAdminFormToMemory(cat){
+  _pricingMemory[cat] = [];
+  for(let i=0;i<3;i++){
+    _pricingMemory[cat].push({
+      name:     document.getElementById('pkg'+i+'-name').value.trim(),
+      euro:     document.getElementById('pkg'+i+'-euro').value.trim(),
+      robux:    document.getElementById('pkg'+i+'-robux').value.trim(),
+      delivery: document.getElementById('pkg'+i+'-delivery').value.trim(),
+      popular:  document.getElementById('pkg'+i+'-popular').value==='yes',
+      features: [..._pkgFeatures[cat][i]]
+    });
+  }
+}
+
+function switchPricingAdminCat(cat){
+  _saveAdminFormToMemory(_pricingEditCat);
+  _pricingEditCat = cat;
+  document.querySelectorAll('.pca-tab').forEach((t,i)=>t.classList.toggle('active',['realistic','highctr'][i]===cat));
+  prefillPricingForCat(cat);
+  switchPkg(0);
+  // sync preview tab to edit tab
+  _previewPricingCat = cat;
+  document.getElementById('prev-pt-realistic')?.classList.toggle('active', cat==='realistic');
+  document.getElementById('prev-pt-highctr')?.classList.toggle('active', cat==='highctr');
+  liveUpdatePreview();
+}
+
+function prefillPricingForCat(cat){
+  const src = _pricingMemory[cat] || (window._pricing && window._pricing[cat]) || PRICING_DEFAULTS[cat];
+  for(let i=0;i<3;i++){
+    const d = src[i] || PRICING_DEFAULTS[cat][i];
+    document.getElementById('pkg'+i+'-name').value     = d.name||'';
+    document.getElementById('pkg'+i+'-euro').value     = d.euro||'';
+    document.getElementById('pkg'+i+'-robux').value    = d.robux||'';
+    document.getElementById('pkg'+i+'-delivery').value = d.delivery||'';
+    document.getElementById('pkg'+i+'-popular').value  = d.popular?'yes':'no';
+    _pkgFeatures[cat][i] = Array.isArray(d.features)?[...d.features]:[...PRICING_DEFAULTS[cat][i].features];
+    renderFeatureListAdmin(i);
+  }
+}
+
+function prefillPricing(){
+  _pricingEditCat = 'realistic';
+  document.querySelectorAll('.pca-tab').forEach((t,i)=>t.classList.toggle('active',i===0));
+  prefillPricingForCat('realistic');
+}
+
+async function savePricing(){
+  // Save current form to memory first
+  _saveAdminFormToMemory(_pricingEditCat);
+  const result = {};
+  for(const cat of ['realistic','highctr']){
+    result[cat] = (_pricingMemory[cat] || PRICING_DEFAULTS[cat]).map((d,i)=>({
+      name:     d.name     || PRICING_DEFAULTS[cat][i].name,
+      euro:     d.euro     || PRICING_DEFAULTS[cat][i].euro,
+      robux:    d.robux    || PRICING_DEFAULTS[cat][i].robux,
+      delivery: d.delivery || PRICING_DEFAULTS[cat][i].delivery,
+      popular:  !!d.popular,
+      features: [...(d.features || PRICING_DEFAULTS[cat][i].features)]
+    }));
+  }
+  const{db,ref,set}=window._fb;
+  await set(ref(db,'pricing'), result);
+  showMsg('pricing-msg','Pricing saved!','ok');
+}
+
+// ── RENDER PRICING ──
+window.renderPricing = function(data){
+  const chk='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
+  const icons=[
+    '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+    '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>'
+  ];
+  function buildCards(pkgs, gridId){
+    const grid = document.getElementById(gridId);
+    if(!grid) return;
+    grid.innerHTML = pkgs.map((p,i)=>`
+      <div class="price-card${p.popular?' popular':''} fade-in">
+        ${p.popular?'<div class="popular-badge">MOST POPULAR</div>':''}
+        <div class="price-icon-box">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${icons[i]}</svg>
+        </div>
+        <div class="price-name">${p.name}</div>
+        <div class="price-euro">${p.euro}</div>
+        <div style="margin-top:6px"><span class="price-robux">${p.robux}</span> <span class="price-tax">(w/ Tax)</span></div>
+        <div class="delivery-box">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Delivery: ${p.delivery}
+        </div>
+        <ul class="price-features">
+          ${(p.features||[]).map(f=>`<li>${chk}${f}</li>`).join('')}
+        </ul>
+        <a href="#contact" class="${p.popular?'price-btn-primary':'price-btn-ghost'}">Order Now</a>
+      </div>`).join('');
+  }
+  const rPkgs = (data && data.realistic && data.realistic.length===3) ? data.realistic : PRICING_DEFAULTS.realistic;
+  const hPkgs = (data && data.highctr   && data.highctr.length===3)   ? data.highctr   : PRICING_DEFAULTS.highctr;
+  buildCards(rPkgs, 'pricing-grid-realistic');
+  buildCards(hPkgs, 'pricing-grid-highctr');
+  observeFade();
+};
+
+// ── LIVE PREVIEW ──
+function switchPreviewPricingTab(cat){
+  _previewPricingCat = cat;
+  document.getElementById('prev-pt-realistic')?.classList.toggle('active', cat==='realistic');
+  document.getElementById('prev-pt-highctr')?.classList.toggle('active', cat==='highctr');
+  liveUpdatePreview();
+}
+
+function liveUpdatePreview(){
+  const cat = _previewPricingCat;
+  // Read current form values for all 3 packages
+  const chk='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
+  const icons=[
+    '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+    '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>'
+  ];
+  const grid = document.getElementById('preview-pricing-grid');
+  if(!grid) return;
+
+  // If the editing category matches preview, show live form values
+  // Otherwise show saved/default values for that category
+  let pkgs;
+  if(cat === _pricingEditCat){
+    pkgs = [0,1,2].map(i => ({
+      name:     document.getElementById('pkg'+i+'-name')?.value.trim() || PRICING_DEFAULTS[cat][i].name,
+      euro:     document.getElementById('pkg'+i+'-euro')?.value.trim() || PRICING_DEFAULTS[cat][i].euro,
+      robux:    document.getElementById('pkg'+i+'-robux')?.value.trim() || PRICING_DEFAULTS[cat][i].robux,
+      delivery: document.getElementById('pkg'+i+'-delivery')?.value.trim() || PRICING_DEFAULTS[cat][i].delivery,
+      popular:  document.getElementById('pkg'+i+'-popular')?.value === 'yes',
+      features: [...(_pkgFeatures[cat][i] || PRICING_DEFAULTS[cat][i].features)]
+    }));
+  } else {
+    const src = _pricingMemory[cat] || (window._pricing && window._pricing[cat]) || PRICING_DEFAULTS[cat];
+    pkgs = src.map((d,i) => ({...PRICING_DEFAULTS[cat][i], ...d}));
+  }
+
+  grid.innerHTML = pkgs.map((p,i)=>`
+    <div class="price-card${p.popular?' popular':''}" style="opacity:1;transform:none">
+      ${p.popular?'<div class="popular-badge">MOST POPULAR</div>':''}
+      <div class="price-icon-box">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${icons[i]}</svg>
+      </div>
+      <div class="price-name">${p.name||'—'}</div>
+      <div class="price-euro">${p.euro||'—'}</div>
+      <div style="margin-top:6px"><span class="price-robux">${p.robux||'—'}</span> <span class="price-tax">(w/ Tax)</span></div>
+      <div class="delivery-box">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Delivery: ${p.delivery||'—'}
+      </div>
+      <ul class="price-features">
+        ${(p.features||[]).map(f=>`<li>${chk}${f}</li>`).join('')}
+      </ul>
+      <a href="#contact" class="${p.popular?'price-btn-primary':'price-btn-ghost'}" style="pointer-events:none">Order Now</a>
+    </div>`).join('');
+}
+
+// ── RENDER PROJECTS (Latest Work grid) ──
 window.renderProjects = function(data){
   const keys=Object.keys(data).sort((a,b)=>(data[b].ts||0)-(data[a].ts||0));
   const grid=document.getElementById('work-grid');
@@ -964,8 +1344,6 @@ window.renderProjects = function(data){
     grid.innerHTML='<div class="work-empty">No projects yet — add them from the admin panel.</div>';
     return;
   }
-  const typeLabel={realistic:'Realistic',cartoony:'Cartoony','before-after':'Before/After'};
-  const pillClass={realistic:'pill-realistic',cartoony:'pill-cartoony','before-after':'pill-before-after'};
   grid.innerHTML=keys.map((k)=>{
     const p=data[k];
     const isFeat=p.featured===true||p.featured==='yes';
@@ -999,107 +1377,6 @@ window.renderReviews = function(data){
   : '<div class="reviews-empty">No reviews yet — add them from the admin panel.</div>';
   observeFade();
 };
-
-// ── PRICING DEFAULTS ──
-const PRICING_DEFAULTS=[
-  {name:'Standard',euro:'15–20€',robux:'2,500 Robux',delivery:'1–3 Days',popular:false,
-   features:['1 Thumbnail','High Quality Render','2 Revisions','Source File Included']},
-  {name:'Priority',euro:'25–30€',robux:'3,000 Robux',delivery:'Express',popular:true,
-   features:['1 Thumbnail','Premium Quality','Unlimited Revisions','Source File Included','Priority Queue']},
-  {name:'Premium Bundle',euro:'50€',robux:'5,000 Robux',delivery:'1–2 Days',popular:false,
-   features:['2 Thumbnails','Premium Quality','Unlimited Revisions','Source Files','Priority Queue','Matching Style']}
-];
-let _pkgFeatures=[
-  [...PRICING_DEFAULTS[0].features],
-  [...PRICING_DEFAULTS[1].features],
-  [...PRICING_DEFAULTS[2].features]
-];
-
-function switchPkg(i){
-  document.querySelectorAll('.pkg-tab').forEach((t,j)=>t.classList.toggle('active',j===i));
-  document.querySelectorAll('.pkg-editor').forEach((e,j)=>e.classList.toggle('active',j===i));
-}
-function renderFeatureListAdmin(pkgIdx){
-  const fl=document.getElementById('pkg'+pkgIdx+'-features');
-  fl.innerHTML=_pkgFeatures[pkgIdx].map((f,fi)=>`
-    <div class="feature-item-admin">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-      <span>${f}</span>
-      <button class="feat-del" onclick="removeFeature(${pkgIdx},${fi})">✕</button>
-    </div>`).join('');
-}
-function addFeature(pkgIdx){
-  const inp=document.getElementById('pkg'+pkgIdx+'-feat-input');
-  const val=inp.value.trim();
-  if(!val) return;
-  _pkgFeatures[pkgIdx].push(val); inp.value='';
-  renderFeatureListAdmin(pkgIdx);
-}
-function removeFeature(pkgIdx,featIdx){
-  _pkgFeatures[pkgIdx].splice(featIdx,1);
-  renderFeatureListAdmin(pkgIdx);
-}
-function prefillPricing(){
-  const data=window._pricing;
-  for(let i=0;i<3;i++){
-    const d=data&&data[i]?data[i]:PRICING_DEFAULTS[i];
-    document.getElementById('pkg'+i+'-name').value=d.name||'';
-    document.getElementById('pkg'+i+'-euro').value=d.euro||'';
-    document.getElementById('pkg'+i+'-robux').value=d.robux||'';
-    document.getElementById('pkg'+i+'-delivery').value=d.delivery||'';
-    document.getElementById('pkg'+i+'-popular').value=d.popular?'yes':'no';
-    _pkgFeatures[i]=Array.isArray(d.features)?[...d.features]:[...PRICING_DEFAULTS[i].features];
-    renderFeatureListAdmin(i);
-  }
-}
-async function savePricing(){
-  const packages=[];
-  for(let i=0;i<3;i++){
-    packages.push({
-      name:     document.getElementById('pkg'+i+'-name').value.trim()||PRICING_DEFAULTS[i].name,
-      euro:     document.getElementById('pkg'+i+'-euro').value.trim()||PRICING_DEFAULTS[i].euro,
-      robux:    document.getElementById('pkg'+i+'-robux').value.trim()||PRICING_DEFAULTS[i].robux,
-      delivery: document.getElementById('pkg'+i+'-delivery').value.trim()||PRICING_DEFAULTS[i].delivery,
-      popular:  document.getElementById('pkg'+i+'-popular').value==='yes',
-      features: [..._pkgFeatures[i]]
-    });
-  }
-  const{db,ref,set}=window._fb;
-  await set(ref(db,'pricing'),packages);
-  showMsg('pricing-msg','Pricing saved!','ok');
-}
-
-// ── RENDER PRICING ──
-window.renderPricing = function(data){
-  const pkgs=data&&Array.isArray(data)&&data.length===3?data:PRICING_DEFAULTS;
-  const chk='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
-  const icons=[
-    '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
-    '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
-    '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>'
-  ];
-  const grid=document.getElementById('pricing-grid');
-  grid.innerHTML=pkgs.map((p,i)=>`
-    <div class="price-card${p.popular?' popular':''} fade-in">
-      ${p.popular?'<div class="popular-badge">MOST POPULAR</div>':''}
-      <div class="price-icon-box">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${icons[i]}</svg>
-      </div>
-      <div class="price-name">${p.name}</div>
-      <div class="price-euro">${p.euro}</div>
-      <div style="margin-top:6px"><span class="price-robux">${p.robux}</span> <span class="price-tax">(w/ Tax)</span></div>
-      <div class="delivery-box">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        Delivery: ${p.delivery}
-      </div>
-      <ul class="price-features">
-        ${(p.features||[]).map(f=>`<li>${chk}${f}</li>`).join('')}
-      </ul>
-      <a href="#contact" class="${p.popular?'price-btn-primary':'price-btn-ghost'}">Order Now</a>
-    </div>`).join('');
-  observeFade();
-};
-
 
 // ── DOWNLOAD IMAGE (works with any URL) ──
 async function downloadImg(url, filename){
