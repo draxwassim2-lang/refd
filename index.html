@@ -260,8 +260,8 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
 /* Body = sidebar + content */
 .afs-body{display:flex;flex:1;overflow:hidden}
 
-/* Sidebar */
-.afs-sidebar{width:220px;flex-shrink:0;background:rgba(9,23,38,.9);border-right:1px solid var(--border);padding:20px 12px;display:flex;flex-direction:column;gap:4px;overflow-y:auto}
+/* Sidebar — moved to the RIGHT */
+.afs-sidebar{width:220px;flex-shrink:0;background:rgba(9,23,38,.9);border-left:1px solid var(--border);border-right:none;padding:20px 12px;display:flex;flex-direction:column;gap:4px;overflow-y:auto;order:2}
 .afs-nav-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;border:none;background:transparent;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.95rem;letter-spacing:.04em;cursor:pointer;transition:all .2s;width:100%;text-align:left}
 .afs-nav-item svg{flex-shrink:0;opacity:.6;transition:opacity .2s}
 .afs-nav-item:hover{background:rgba(126,184,247,.07);color:var(--white)}
@@ -271,7 +271,7 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
 .afs-nav-divider{height:1px;background:var(--border);margin:8px 4px}
 
 /* Content area */
-.afs-content{flex:1;overflow-y:auto;background:var(--bg);scrollbar-width:thin}
+.afs-content{flex:1;overflow-y:auto;background:var(--bg);scrollbar-width:thin;order:1}
 .afs-panel{display:none;height:100%}
 .afs-panel.active{display:block}
 
@@ -290,7 +290,7 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
 .preview-pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 @media(max-width:1100px){.preview-pricing-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:800px){.afs-pricing-wrap{flex-direction:column}.afs-pricing-edit{width:100%;border-right:none;border-bottom:1px solid var(--border)}.preview-pricing-grid{grid-template-columns:1fr}}
-@media(max-width:700px){.afs-sidebar{width:60px}.afs-nav-item span{display:none}.afs-nav-item{justify-content:center;padding:11px}.afs-nav-divider{margin:8px 2px}}
+@media(max-width:700px){.afs-sidebar{width:60px;border-left:1px solid var(--border);border-right:none}.afs-nav-item span{display:none}.afs-nav-item{justify-content:center;padding:11px}.afs-nav-divider{margin:8px 2px}}
 
 /* ap-* classes kept for login modal */
 .ap-header{padding:26px 26px 0;display:flex;align-items:center;justify-content:space-between}
@@ -685,9 +685,17 @@ footer{padding:40px 0;border-top:1px solid var(--border)}
               </div>
             </div>
             <div class="admin-field">
-              <label>Image URL</label>
-              <input type="url" id="proj-url" placeholder="https://i.imgur.com/xxxx.jpg" oninput="previewUrl('proj-url','proj-prev')"/>
-              <img id="proj-prev" class="upload-preview"/>
+              <label>Image — URL أو رفع مباشر</label>
+              <input type="url" id="proj-url" placeholder="https://i.imgur.com/xxxx.jpg" oninput="previewUrl('proj-url','proj-prev')" onpaste="setTimeout(()=>previewUrl('proj-url','proj-prev'),50)"/>
+              <div style="text-align:center;color:var(--muted);font-size:.75rem;margin:6px 0">— أو —</div>
+              <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(126,184,247,.05);border:1px dashed rgba(126,184,247,.25);border-radius:10px;cursor:pointer;font-size:.85rem;color:var(--muted)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span id="proj-fn">اضغط لاختيار صورة…</span>
+                <input type="file" id="proj-file" accept="image/*" style="display:none" onchange="previewFile('proj-file','proj-prev','proj-fn')"/>
+              </label>
+              <div id="proj-prog" style="display:none;margin-top:8px;background:rgba(126,184,247,.08);border-radius:6px;height:6px;overflow:hidden"><div id="proj-prog-bar" style="height:100%;background:var(--ac2);width:0%;transition:width .3s;border-radius:6px"></div></div>
+              <div id="proj-st" style="font-size:.78rem;color:var(--muted);margin-top:4px"></div>
+              <img id="proj-prev" class="upload-preview" onerror="this.style.display='none'"/>
             </div>
             <button class="admin-btn" onclick="addProject()" style="margin-bottom:32px">Add Project</button>
             <div class="sec-title">Current Projects</div>
@@ -888,8 +896,14 @@ function previewFile(iid,pid,nid){
 function previewUrl(inputId, imgId){
   const url=document.getElementById(inputId).value.trim();
   const img=document.getElementById(imgId);
-  if(url){img.src=url;img.style.display='block';}
-  else{img.style.display='none';}
+  if(url){
+    img.src=url;
+    img.style.display='block';
+    img.onerror=()=>{img.style.display='none';};
+    img.onload=()=>{img.style.display='block';};
+  } else {
+    img.style.display='none';
+  }
 }
 
 // ── UPLOAD (with progress bar) ──
@@ -965,21 +979,36 @@ function showMsg(id,text,type='ok'){
 // ── ADD PROJECT ──
 async function addProject(){
   const title=document.getElementById('proj-title').value.trim();
-  const url=document.getElementById('proj-url').value.trim();
-  if(!title){showMsg('proj-msg','Enter a title.','err');return}
-  if(!url){showMsg('proj-msg','Enter an image URL.','err');return}
-  if(!window._fb){showMsg('proj-msg','Firebase not ready, wait a moment.','err');return}
+  const urlInput=document.getElementById('proj-url').value.trim();
+  const fileInput=document.getElementById('proj-file');
+  const hasFile=fileInput&&fileInput.files&&fileInput.files.length>0;
+
+  if(!title){showMsg('proj-msg','أدخل عنوان المشروع.','err');return}
+  if(!urlInput && !hasFile){showMsg('proj-msg','أدخل رابط صورة أو ارفع صورة مباشرة.','err');return}
+  if(!window._fb){showMsg('proj-msg','Firebase غير جاهز، انتظر لحظة.','err');return}
+
+  let finalUrl = urlInput;
+
+  // If a file is selected, upload it to Firebase Storage first
+  if(hasFile){
+    finalUrl = await uploadImage('proj-file','proj-st','proj-prog','proj-prog-bar','projects');
+    if(!finalUrl){showMsg('proj-msg','فشل رفع الصورة — راجع الخطأ أعلاه.','err');return}
+  }
+
   const{db,ref,push}=window._fb;
   await push(ref(db,'projects'),{
     title,
     type: document.getElementById('proj-type').value,
     featured: document.getElementById('proj-featured').value==='yes',
-    url, ts: Date.now()
+    url: finalUrl, ts: Date.now()
   });
   document.getElementById('proj-title').value='';
   document.getElementById('proj-url').value='';
+  if(fileInput){fileInput.value='';}
+  document.getElementById('proj-fn').textContent='اضغط لاختيار صورة…';
+  document.getElementById('proj-st').textContent='';
   document.getElementById('proj-prev').style.display='none';
-  showMsg('proj-msg','Project added!','ok');
+  showMsg('proj-msg','تم إضافة المشروع!','ok');
 }
 
 // ── ADD REVIEW ──
